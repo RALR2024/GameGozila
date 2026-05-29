@@ -3,6 +3,6 @@
   "target": {
     "namespace": "android_app",
     "package_name": "com.ralr2024.gorilas",
-    "sha256_cert_fingerprints": ["REPLACE_WITH_YOUR_SHA256_FINGERPRINT"]
+    "sha256_cert_fingerprints": ["6B:B9:A0:DF:12:F9:35:2D:A1:21:D6:26:FE:70:70:B3:AC:18:9F:0B:5E:64:0A:36:17:DB:90:3D:AE:DF:22:43"]
   }
 }]
