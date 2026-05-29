@@ -71,6 +71,15 @@ input[type=range]::-moz-range-thumb{width:38px;height:38px;border-radius:50%;bac
 .btn2{background:linear-gradient(180deg,#9ee7ff,#4dc4ff)!important;box-shadow:0 5px 0 #2080b0,0 6px 16px rgba(0,0,0,.3)!important}
 .btn3{background:linear-gradient(180deg,#ffb3c8,#ff8aa8)!important;box-shadow:0 5px 0 #c4577a,0 6px 16px rgba(0,0,0,.3)!important}
 #screenFlash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:4;transition:opacity .08s}
+#installBanner{position:absolute;bottom:0;left:0;right:0;z-index:30;background:linear-gradient(180deg,rgba(61,26,107,0.95),rgba(30,12,60,0.98));backdrop-filter:blur(10px);padding:16px 20px;padding-bottom:calc(16px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;gap:14px;border-top:2px solid rgba(255,216,107,0.4);transform:translateY(100%);transition:transform .4s ease-out}
+#installBanner.show{transform:translateY(0)}
+#installBanner .ibIcon{font-size:36px;flex-shrink:0}
+#installBanner .ibText{flex:1;color:#fff}
+#installBanner .ibTitle{font-family:'Bungee',sans-serif;font-size:14px;color:#ffd86b}
+#installBanner .ibDesc{font-size:12px;opacity:.8;margin-top:2px}
+#installBanner .ibBtn{font-family:'Fredoka',sans-serif;font-weight:700;font-size:14px;color:#2d1b54;background:linear-gradient(180deg,#ffe27a,#ffc94d);border:none;border-radius:12px;padding:10px 20px;cursor:pointer;box-shadow:0 4px 0 #c99320;white-space:nowrap;flex-shrink:0}
+#installBanner .ibBtn:active{transform:translateY(2px);box-shadow:0 2px 0 #c99320}
+#installBanner .ibClose{background:none;border:none;color:rgba(255,255,255,0.5);font-size:20px;cursor:pointer;padding:4px;flex-shrink:0}
 #achPopup{position:absolute;top:calc(100px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%) translateY(-20px);background:rgba(20,10,40,0.9);border:2px solid #ffd86b;border-radius:16px;padding:10px 20px;color:#fff;z-index:25;text-align:center;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;white-space:nowrap}
 #achPopup.show{opacity:1;transform:translateX(-50%) translateY(0)}
 #achPopup .achIcon{font-size:24px}
@@ -91,6 +100,12 @@ input[type=range]::-moz-range-thumb{width:38px;height:38px;border-radius:50%;bac
 <div id="wrap">
 <canvas id="game"></canvas>
 <div id="screenFlash"></div>
+<div id="installBanner">
+  <div class="ibIcon">&#x1F98D;</div>
+  <div class="ibText"><div class="ibTitle">Instalar Batalla de Gorilas</div><div class="ibDesc">Juega sin conexion como app nativa</div></div>
+  <button class="ibBtn" id="installBtn">INSTALAR</button>
+  <button class="ibClose" id="installClose">&#x2715;</button>
+</div>
 <div id="achPopup"><div class="achIcon" id="achIcon"></div><div class="achName" id="achName"></div><div class="achDesc" id="achDesc"></div></div>
 <div id="hud">
   <div class="badge" id="scoreP"><div class="lbl" id="lblP">Tu</div><div class="val" id="pScore">0</div></div>
@@ -139,6 +154,39 @@ input[type=range]::-moz-range-thumb{width:38px;height:38px;border-radius:50%;bac
 </div>
 <script>
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(function(){});
+
+// ---- PWA Install Prompt ----
+var deferredPrompt=null;
+var installBanner=document.getElementById('installBanner');
+var installBtn=document.getElementById('installBtn');
+var installClose=document.getElementById('installClose');
+
+window.addEventListener('beforeinstallprompt',function(e){
+  e.preventDefault();
+  deferredPrompt=e;
+  if(!localStorage.getItem('install_dismissed')){
+    setTimeout(function(){installBanner.classList.add('show')},1500);
+  }
+});
+
+installBtn.addEventListener('click',function(){
+  if(!deferredPrompt)return;
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(function(result){
+    deferredPrompt=null;
+    installBanner.classList.remove('show');
+  });
+});
+
+installClose.addEventListener('click',function(){
+  installBanner.classList.remove('show');
+  localStorage.setItem('install_dismissed','1');
+});
+
+window.addEventListener('appinstalled',function(){
+  installBanner.classList.remove('show');
+  deferredPrompt=null;
+});
 
 // ---- Sound ----
 var SFX={ctx:null,on:true,mN:[],mP:false,
