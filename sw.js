@@ -1,4 +1,4 @@
-var CACHE='gorilas-v6';
+var CACHE='gorilas-v7';
 var URLS=[
   './',
   './index.html',
@@ -7,7 +7,10 @@ var URLS=[
   './icon-512.png',
   './icon-maskable-192.png',
   './icon-maskable-512.png',
-  './privacidad.html'
+  './privacidad.html',
+  './terminos.html',
+  './contacto.html',
+  './acerca.html'
 ];
 
 self.addEventListener('install',function(e){

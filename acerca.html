@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Acerca de Batalla de Gorilas: un juego de artillería por turnos inspirado en el clásico Gorillas de QBasic (1991), reimaginado como aplicación web moderna.">
+<title>Acerca de - Batalla de Gorilas</title>
+<style>
+body{font-family:system-ui,sans-serif;max-width:700px;margin:0 auto;padding:20px;line-height:1.7;color:#333;background:#fafafa}
+h1{color:#3d1a6b;font-size:24px}
+h2{color:#5a2d8a;font-size:18px;margin-top:24px}
+p,li{margin:10px 0}
+ul{padding-left:20px}
+a{color:#5a2d8a}
+.nav{background:#3d1a6b;padding:10px 20px;margin:-20px -20px 20px;display:flex;gap:16px;flex-wrap:wrap;align-items:center}
+.nav a{color:#ffd86b;text-decoration:none;font-weight:600;font-size:14px}
+.nav a:hover{text-decoration:underline}
+.hero{text-align:center;padding:20px 0 10px}
+.hero .emoji{font-size:64px}
+.highlight{background:#f5f0ff;border-left:4px solid #5a2d8a;padding:12px 16px;border-radius:0 8px 8px 0;margin:16px 0}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a href="index.html">Jugar</a>
+  <a href="acerca.html">Acerca de</a>
+  <a href="privacidad.html">Privacidad</a>
+  <a href="terminos.html">Términos</a>
+  <a href="contacto.html">Contacto</a>
+</nav>
+
+<div class="hero">
+  <div class="emoji">&#x1F98D;&#x1F34C;</div>
+  <h1>Batalla de Gorilas</h1>
+  <p>Un juego de artillería por turnos para navegador</p>
+</div>
+
+<h2>Un clásico reinventado</h2>
+<p>Batalla de Gorilas es un homenaje al legendario <strong>Gorillas</strong>, el juego de artillería que venía incluido con <strong>QBasic en MS-DOS</strong> allá por 1991. En aquella versión, dos gorilas se lanzaban plátanos explosivos desde lo alto de los rascacielos de una ciudad pixelada, y el jugador debía ajustar el ángulo y la velocidad de tiro para acertar al oponente.</p>
+
+<p>Aquella idea simple pero adictiva inspiró a toda una generación de jugadores. Batalla de Gorilas toma ese concepto original y lo reimagina con gráficos modernos, efectos de sonido, y mecánicas nuevas que le dan una segunda vida al género.</p>
+
+<h2>Características</h2>
+<ul>
+<li><strong>Tres modos de juego:</strong> contra la CPU, contra un amigo en el mismo dispositivo, o modo infinito de supervivencia.</li>
+<li><strong>Tres arenas:</strong> Ciudad Neón, Selva Tropical y Espacio Exterior, cada una con su propia gravedad y condiciones de viento.</li>
+<li><strong>Arsenal variado:</strong> plátano clásico, bomba racimo y boomerang, cada uno con comportamiento de vuelo distinto.</li>
+<li><strong>Sistema climático:</strong> lluvia, nieve y tormentas eléctricas que afectan la visibilidad y la atmósfera del juego.</li>
+<li><strong>Power-ups:</strong> recoge mejoras en el campo de batalla como Mega (explosión grande), Sniper (trayectoria extendida) y Calma (ignora el viento).</li>
+<li><strong>Logros:</strong> desbloquea 7 logros diferentes completando desafíos específicos.</li>
+<li><strong>Sin conexión:</strong> al ser una PWA (Progressive Web App), puedes instalar el juego y jugar sin internet.</li>
+<li><strong>Tres niveles de dificultad:</strong> fácil, normal y difícil, que ajustan la precisión de la CPU.</li>
+</ul>
+
+<h2>Cómo jugar</h2>
+<div class="highlight">
+  <p><strong>El objetivo es simple:</strong> lanza plátanos explosivos al gorila enemigo ajustando el ángulo y la fuerza del tiro. Gana el primero en acertar 3 veces.</p>
+</div>
+<p>Puedes apuntar de dos formas:</p>
+<ul>
+<li><strong>Controles deslizantes:</strong> usa los sliders de ángulo y fuerza en la parte inferior, luego pulsa "LANZAR".</li>
+<li><strong>Toque directo:</strong> toca o haz clic en la pantalla para apuntar — el ángulo y fuerza se calculan automáticamente según la posición. Al soltar, se dispara.</li>
+</ul>
+<p>Ten en cuenta el <strong>viento</strong>, que se muestra en la parte superior de la pantalla. Un viento fuerte puede desviar tu disparo significativamente. En el modo Espacio no hay viento, pero la gravedad es mucho menor.</p>
+
+<h2>Tecnología</h2>
+<p>Batalla de Gorilas está desarrollado enteramente con tecnologías web estándar:</p>
+<ul>
+<li><strong>HTML5 Canvas</strong> para los gráficos y animaciones del juego.</li>
+<li><strong>Web Audio API</strong> para los efectos de sonido generados proceduralmente (sin archivos de audio externos).</li>
+<li><strong>Service Worker</strong> para funcionalidad offline y caché de recursos.</li>
+<li><strong>JavaScript vanilla</strong> — sin frameworks ni dependencias externas.</li>
+</ul>
+<p>Todo el juego se ejecuta en un solo archivo HTML, sin necesidad de servidor backend.</p>
+
+<h2>Proyecto de código abierto</h2>
+<p>El código fuente está disponible en <a href="https://github.com/RALR2024/GameGozila" target="_blank" rel="noopener">GitHub</a>. Si encuentras un error o tienes una sugerencia, puedes abrir un issue o contribuir directamente al proyecto.</p>
+
+<h2>Contacto</h2>
+<p>¿Preguntas, sugerencias o comentarios? Visita nuestra <a href="contacto.html">página de contacto</a> o escribe a <a href="mailto:rl@crp-software.com">rl@crp-software.com</a>.</p>
+</body>
+</html>
