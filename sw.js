@@ -1,4 +1,4 @@
-var CACHE='gorilas-v7';
+var CACHE='gorilas-v8';
 var URLS=[
   './',
   './index.html',
@@ -10,7 +10,12 @@ var URLS=[
   './privacidad.html',
   './terminos.html',
   './contacto.html',
-  './acerca.html'
+  './acerca.html',
+  './blog.html',
+  './blog-historia-juegos-artilleria.html',
+  './blog-guia-estrategia-arenas.html',
+  './blog-como-se-hizo.html',
+  './blog-tips-modo-dificil.html'
 ];
 
 self.addEventListener('install',function(e){

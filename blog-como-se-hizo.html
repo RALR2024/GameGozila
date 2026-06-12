@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Cómo se desarrolló Batalla de Gorilas: decisiones técnicas, generación procedural de sonido con Web Audio API, y los desafíos de crear un juego completo en un solo archivo HTML sin frameworks.">
+<title>Cómo se hizo Batalla de Gorilas - Blog de Batalla de Gorilas</title>
+<style>
+body{font-family:system-ui,sans-serif;max-width:700px;margin:0 auto;padding:20px;line-height:1.7;color:#333;background:#fafafa}
+h1{color:#3d1a6b;font-size:24px;line-height:1.3}
+h2{color:#5a2d8a;font-size:18px;margin-top:28px}
+h3{color:#7a2a8c;font-size:16px;margin-top:20px}
+p,li{margin:10px 0}
+ul,ol{padding-left:20px}
+a{color:#5a2d8a}
+code{background:#f0ebf8;padding:2px 6px;border-radius:4px;font-size:14px}
+.nav{background:#3d1a6b;padding:10px 20px;margin:-20px -20px 20px;display:flex;gap:16px;flex-wrap:wrap;align-items:center}
+.nav a{color:#ffd86b;text-decoration:none;font-weight:600;font-size:14px}
+.nav a:hover{text-decoration:underline}
+.meta{color:#888;font-size:14px;margin-bottom:20px}
+.highlight{background:#f5f0ff;border-left:4px solid #5a2d8a;padding:12px 16px;border-radius:0 8px 8px 0;margin:16px 0}
+.back{display:inline-block;margin-top:24px;font-size:14px}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a href="index.html">Jugar</a>
+  <a href="acerca.html">Acerca de</a>
+  <a href="blog.html">Blog</a>
+  <a href="privacidad.html">Privacidad</a>
+  <a href="terminos.html">Términos</a>
+  <a href="contacto.html">Contacto</a>
+</nav>
+
+<h1>Cómo se hizo Batalla de Gorilas: desarrollo de un juego web sin frameworks</h1>
+<div class="meta">7 de junio de 2026 &middot; 8 min de lectura</div>
+
+<p>Batalla de Gorilas es un juego completo — con tres modos de juego, tres arenas, sistema de clima, logros, sonido y soporte offline — que vive en un solo archivo HTML sin dependencias externas. En este artículo contamos las decisiones técnicas detrás de su desarrollo y los desafíos que encontramos en el camino.</p>
+
+<h2>La filosofía: un solo archivo, cero dependencias</h2>
+
+<p>La decisión de construir el juego en un solo archivo HTML no fue accidental. Queríamos honrar el espíritu original de Gorillas de QBasic: un programa autocontenido que cualquiera pudiera abrir, leer y modificar. En 1991, Gorillas era un archivo <code>.BAS</code> que podías editar con cualquier editor de texto. En 2026, nuestro <code>index.html</code> cumple el mismo rol.</p>
+
+<p>Esta restricción autoimpuesta trajo ventajas inesperadas:</p>
+<ul>
+<li><strong>Cero tiempo de build:</strong> No hay webpack, no hay transpilación, no hay bundling. Guardas el archivo y recargas el navegador.</li>
+<li><strong>Cero dependencias que actualizar:</strong> No hay <code>node_modules</code>, no hay vulnerabilidades en paquetes de terceros, no hay breaking changes.</li>
+<li><strong>Portabilidad total:</strong> Puedes copiar el archivo a un USB, mandarlo por email, o hostearlo en cualquier servidor estático.</li>
+<li><strong>Carga instantánea:</strong> Sin JavaScript externo que parsear, el juego está listo en milisegundos.</li>
+</ul>
+
+<p>Claro, también trae desventajas. El archivo es largo, no hay modularización, y el CSS está embebido. Pero para un proyecto de este tamaño, las ventajas superan ampliamente los costos.</p>
+
+<h2>HTML5 Canvas: dibujar un mundo frame a frame</h2>
+
+<p>Todo lo visual en Batalla de Gorilas se dibuja en un elemento <code>&lt;canvas&gt;</code>. No hay sprites precargados, no hay imágenes externas, no hay hojas de estilo CSS para los elementos del juego. Cada frame, el código recorre todos los objetos del mundo — cielo, estrellas, edificios, gorilas, proyectiles, explosiones, partículas — y los dibuja desde cero.</p>
+
+<h3>Generación procedural de edificios</h3>
+
+<p>Los edificios de la ciudad se generan aleatoriamente en cada ronda. El algoritmo divide el ancho de la pantalla en segmentos iguales y asigna a cada uno una altura aleatoria. Luego, cada edificio recibe:</p>
+
+<ol>
+<li>Un gradiente de color basado en la paleta del tema activo.</li>
+<li>Una línea de neón en la parte superior (coloreada según la paleta de la arena).</li>
+<li>Ventanas distribuidas aleatoriamente, algunas encendidas con colores del tema y otras apagadas.</li>
+<li>Una antena con luz parpadeante (probabilidad del 40%).</li>
+</ol>
+
+<p>El resultado es que cada partida tiene un paisaje urbano único, sin necesidad de assets artísticos precreados.</p>
+
+<h3>Los gorilas: anatomía de un personaje en Canvas</h3>
+
+<p>Dibujar los gorilas fue uno de los desafíos más divertidos del proyecto. Cada gorila se compone de aproximadamente 15 formas geométricas primitivas: elipses para el cuerpo y la cabeza, círculos para los ojos y la nariz, arcos para la boca, y líneas redondeadas para los brazos.</p>
+
+<p>Los gorilas tienen animaciones sutiles que les dan vida: respiran suavemente (un ciclo de escala usando <code>Math.sin</code>), levantan los brazos cuando celebran, y parpadean cuando reciben un golpe. Todo esto se logra manipulando las mismas formas básicas frame a frame.</p>
+
+<h2>Web Audio API: sonido sin archivos de audio</h2>
+
+<div class="highlight">
+<p><strong>Dato notable:</strong> Batalla de Gorilas no carga ni un solo archivo de audio. Todos los efectos de sonido se generan en tiempo real usando osciladores y ruido blanco.</p>
+</div>
+
+<p>Esta fue quizás la decisión técnica más inusual del proyecto. En lugar de grabar o descargar efectos de sonido, utilizamos la Web Audio API para sintetizarlos proceduralmente. El sistema de sonido del juego crea efectos conectando nodos de audio en cadena:</p>
+
+<ul>
+<li><strong>Explosiones:</strong> Un buffer de ruido blanco filtrado con un filtro pasa-bajos que baja de frecuencia con el tiempo, combinado con un oscilador de onda de sierra a frecuencia baja. El resultado suena como una explosión creíble.</li>
+<li><strong>Lanzamiento:</strong> Un oscilador sinusoidal que baja rápidamente de 500 Hz a 180 Hz en 180 milisegundos, más un toque de ruido blanco. Simula el efecto de "whoosh" de algo volando por el aire.</li>
+<li><strong>Recolección de power-up:</strong> Tres tonos rápidos ascendentes (880, 1100, 1320 Hz) que suenan como el clásico efecto de "moneda" de los juegos retro.</li>
+<li><strong>Victoria/derrota:</strong> Secuencias de tonos que suben (victoria) o bajan (derrota), inspiradas en las señales musicales de los juegos de 8 bits.</li>
+<li><strong>Truenos:</strong> Un burst largo de ruido blanco (1.2 segundos) combinado con un oscilador sinusoidal de 30 Hz para el efecto de retumbar. Se dispara aleatoriamente durante las tormentas.</li>
+</ul>
+
+<p>La ventaja de generar sonido proceduralmente es doble: peso cero en la descarga y variabilidad natural. Cada explosión suena ligeramente diferente porque los parámetros del ruido blanco son aleatorios.</p>
+
+<h2>El sistema de cámara: seguimiento suave del proyectil</h2>
+
+<p>Un detalle que muchos jugadores no notan conscientemente pero que mejora enormemente la experiencia es el sistema de cámara. Cuando lanzas un plátano, la cámara hace un zoom ligero (1.25x) y sigue al proyectil suavemente usando interpolación lineal (<code>lerp</code>). Cuando el proyectil explota, la cámara se centra en la explosión. Cuando vuelve a ser tu turno, la cámara regresa suavemente a la vista general.</p>
+
+<p>Este sistema usa solo tres variables — posición X, Y y nivel de zoom — y una función de interpolación que mezcla el valor actual con el valor objetivo a un 6% por frame. El resultado es un movimiento de cámara cinematográfico que hace que cada tiro se sienta impactante.</p>
+
+<h2>PWA y Service Worker: jugar sin internet</h2>
+
+<p>Convertir el juego en una Progressive Web App fue sorprendentemente sencillo gracias a la arquitectura de un solo archivo. El Service Worker solo necesita cachear unos pocos recursos: el HTML, los iconos y el manifest. Una vez cacheados, el juego funciona completamente offline.</p>
+
+<p>El Service Worker utiliza una estrategia cache-first: primero busca en el cache, y si no encuentra el recurso, lo pide a la red y lo guarda para la próxima vez. Para actualizaciones, simplemente incrementamos el número de versión del cache (actualmente <code>gorilas-v7</code>), lo que provoca que el Service Worker descargue todo de nuevo.</p>
+
+<h2>Lo que aprendimos</h2>
+
+<p>Desarrollar Batalla de Gorilas nos enseñó varias lecciones que aplican a cualquier proyecto web:</p>
+
+<ul>
+<li><strong>Las restricciones fomentan la creatividad.</strong> La limitación de "un solo archivo" nos forzó a encontrar soluciones elegantes como la síntesis de audio procedural.</li>
+<li><strong>Las APIs nativas del navegador son más poderosas de lo que pensamos.</strong> Canvas, Web Audio, Service Workers, la API de vibración — todo lo que necesitamos ya estaba en el navegador.</li>
+<li><strong>La simplicidad escala mejor que la complejidad.</strong> Sin build tools ni dependencias, cualquiera puede clonar el repo y empezar a modificar el juego en segundos.</li>
+<li><strong>Los juegos son la mejor forma de aprender programación.</strong> Igual que Gorillas enseñó QBasic a una generación, esperamos que el código abierto de Batalla de Gorilas inspire a alguien a escribir su primer juego.</li>
+</ul>
+
+<p>El código fuente completo está disponible en <a href="https://github.com/RALR2024/GameGozila" target="_blank" rel="noopener">GitHub</a>. Siéntete libre de explorarlo, modificarlo y hacer tu propia versión.</p>
+
+<a class="back" href="blog.html">&larr; Volver al blog</a>
+</body>
+</html>
