@@ -360,8 +360,9 @@ function makeStars(){stars=[];var n=Math.floor(W*H/(arena==='space'?4000:9000));
 function makeBld(){
   buildings=[];var n=Math.max(8,Math.min(14,Math.round(W/70))),bw=W/n;
   for(var i=0;i<n;i++){var h=rand(H*.16,H*.55),c=TH.bldC[i%TH.bldC.length],ne=TH.neon[Math.floor(rand(0,TH.neon.length))];
-    buildings.push({x:i*bw,w:bw,h:h,c1:c[0],c2:c[1],neon:ne,ant:Math.random()>.6,
-      lit:Array.from({length:Math.floor(rand(8,20))},function(){return{lx:rand(.1,.82),ly:rand(.08,.88),on:Math.random()>.4,col:Math.random()>.7?TH.neon[Math.floor(rand(0,TH.neon.length))]:null}})})}
+    var cols=Math.floor((bw-8)/14),rows=Math.floor(h/20);
+    var winOn=[];for(var wi=0;wi<cols*rows;wi++)winOn.push(Math.random()<.45);
+    buildings.push({x:i*bw,w:bw,h:h,c1:c[0],c2:c[1],neon:ne,ant:Math.random()>.6,cols:cols,rows:rows,winOn:winOn,craters:[]})}
 }
 function placeG(){
   var li=Math.floor(rand(0,Math.min(3,buildings.length))),ri=Math.floor(rand(Math.max(buildings.length-3,0),buildings.length));
