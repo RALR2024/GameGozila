@@ -309,6 +309,7 @@ var powerUps=[],playerPU=null,cpuPU=null;
 var shake={i:0},weapon='normal';
 var weather='clear',wDrops=[],ltn={f:0,nb:0};
 var cam={x:0,y:0,z:1,tx:0,ty:0,tz:1};
+var clouds=[];
 var gameMode='cpu',arena='neon',difficulty='normal',lives=3;
 var flashEl=document.getElementById('screenFlash');
 var TH;
@@ -356,7 +357,9 @@ function stepConf(){for(var i=confetti.length-1;i>=0;i--){var c=confetti[i];c.x+
 function drawConf(){for(var i=0;i<confetti.length;i++){var c=confetti[i];ctx.save();ctx.globalAlpha=Math.max(0,c.life);ctx.translate(c.x,c.y);ctx.rotate(c.rot);ctx.fillStyle=c.col;ctx.fillRect(-c.w/2,-c.h/2,c.w,c.h);ctx.restore()}ctx.globalAlpha=1}
 
 // ---- Generation ----
-function makeStars(){stars=[];var n=Math.floor(W*H/(arena==='space'?4000:9000));for(var i=0;i<n;i++)stars.push({x:rand(0,W),y:rand(0,H*.65),r:rand(.5,arena==='space'?2.5:1.8),tw:rand(0,6.28),sp:rand(.01,.04)})}
+function makeStars(){stars=[];var n=Math.floor(W*H/(arena==='space'?4000:9000));for(var i=0;i<n;i++)stars.push({x:rand(0,W),y:rand(0,H*.65),r:rand(.5,arena==='space'?2.5:1.8),tw:rand(0,6.28),sp:rand(.01,.04)});
+  clouds=[];if(arena==='space')return;var nc=Math.floor(rand(3,6));var opMul=arena==='jungle'?1.5:1;
+  for(var i=0;i<nc;i++)clouds.push({x:rand(0,W),y:rand(H*.08,H*.35),w:rand(60,140),h:rand(20,40),sp:rand(.08,.2),op:rand(.03,.06)*opMul})}
 function makeBld(){
   buildings=[];var n=Math.max(8,Math.min(14,Math.round(W/70))),bw=W/n;
   for(var i=0;i<n;i++){var h=rand(H*.16,H*.55),c=TH.bldC[i%TH.bldC.length],ne=TH.neon[Math.floor(rand(0,TH.neon.length))];
@@ -398,9 +401,15 @@ function showStr(n){elStr.textContent=n+'x RACHA!';elStr.classList.add('show');s
 
 // ---- Draw ----
 function drawSky(){
-  for(var i=0;i<stars.length;i++){var s=stars[i];s.tw+=s.sp;var a=.4+.6*Math.abs(Math.sin(s.tw));ctx.fillStyle='rgba(255,255,255,'+a+')';ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,7);ctx.fill()}
-  if(TH.moon){var mx=W*.78,my=H*.18,r=Math.min(W,H)*.085;var h=ctx.createRadialGradient(mx,my,r*.5,mx,my,r*2.6);h.addColorStop(0,'rgba(220,230,255,0.35)');h.addColorStop(1,'rgba(220,230,255,0)');ctx.fillStyle=h;ctx.beginPath();ctx.arc(mx,my,r*2.6,0,7);ctx.fill();var mg=ctx.createRadialGradient(mx-r*.3,my-r*.3,r*.2,mx,my,r);mg.addColorStop(0,'#fdfbf0');mg.addColorStop(1,'#cdd4e8');ctx.fillStyle=mg;ctx.beginPath();ctx.arc(mx,my,r,0,7);ctx.fill();ctx.fillStyle='rgba(160,170,200,0.5)';ctx.beginPath();ctx.arc(mx-r*.3,my-r*.2,r*.16,0,7);ctx.fill();ctx.beginPath();ctx.arc(mx+r*.25,my+r*.15,r*.12,0,7);ctx.fill()}
+  for(var i=0;i<stars.length;i++){var s=stars[i];s.tw+=s.sp;var a=.4+.6*Math.abs(Math.sin(s.tw));
+    if(s.r>1.2){ctx.fillStyle='rgba(255,255,255,'+(a*.07)+')';ctx.beginPath();ctx.arc(s.x,s.y,s.r*3,0,7);ctx.fill()}
+    ctx.fillStyle='rgba(255,255,255,'+a+')';ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,7);ctx.fill()}
+  if(TH.moon){var mx=W*.78,my=H*.18,r=Math.min(W,H)*.085;var h=ctx.createRadialGradient(mx,my,r*.5,mx,my,r*2.6);h.addColorStop(0,'rgba(220,230,255,0.35)');h.addColorStop(1,'rgba(220,230,255,0)');ctx.fillStyle=h;ctx.beginPath();ctx.arc(mx,my,r*2.6,0,7);ctx.fill();var mg=ctx.createRadialGradient(mx-r*.3,my-r*.3,r*.2,mx,my,r);mg.addColorStop(0,'#fdfbf0');mg.addColorStop(1,'#cdd4e8');ctx.fillStyle=mg;ctx.beginPath();ctx.arc(mx,my,r,0,7);ctx.fill();
+    ctx.fillStyle='rgba(140,150,180,0.4)';ctx.beginPath();ctx.arc(mx-r*.3,my-r*.2,r*.16,0,7);ctx.fill();ctx.beginPath();ctx.arc(mx+r*.25,my+r*.15,r*.12,0,7);ctx.fill();ctx.beginPath();ctx.arc(mx+r*.05,my-r*.35,r*.09,0,7);ctx.fill();ctx.beginPath();ctx.arc(mx-r*.15,my+r*.3,r*.07,0,7);ctx.fill();ctx.beginPath();ctx.arc(mx+r*.35,my-r*.1,r*.06,0,7);ctx.fill()}
+  var hz=ctx.createLinearGradient(0,H*.7,0,H*.85);hz.addColorStop(0,'rgba(0,0,0,0)');hz.addColorStop(1,'rgba('+((arena==='jungle')?'30,60,30':'30,20,60')+',0.15)');ctx.fillStyle=hz;ctx.fillRect(0,H*.7,W,H*.15);
 }
+function drawClouds(){for(var i=0;i<clouds.length;i++){var c=clouds[i];ctx.fillStyle='rgba(255,255,255,'+c.op+')';ctx.beginPath();ctx.ellipse(c.x,c.y,c.w*.5,c.h*.5,0,0,7);ctx.fill();ctx.beginPath();ctx.ellipse(c.x+c.w*.2,c.y-c.h*.15,c.w*.35,c.h*.4,0,0,7);ctx.fill()}}
+function stepClouds(){for(var i=0;i<clouds.length;i++){clouds[i].x+=clouds[i].sp+wind*.05;if(clouds[i].x>W+clouds[i].w)clouds[i].x=-clouds[i].w;if(clouds[i].x<-clouds[i].w)clouds[i].x=W+clouds[i].w}}
 function drawBld(){
   for(var bi=0;bi<buildings.length;bi++){var b=buildings[bi],top=H-b.h;
     // Shadow right side
@@ -598,14 +607,14 @@ function mainLoop(){
   ctx.clearRect(0,0,W,H);updCam();ctx.save();
   if(shake.i>.3){ctx.translate((Math.random()-.5)*shake.i,(Math.random()-.5)*shake.i);shake.i*=.88;if(shake.i<.3)shake.i=0}
   ctx.translate(W/2,H/2);ctx.scale(cam.z,cam.z);ctx.translate(-cam.x,-cam.y);
-  drawSky();drawBld();drawPU();for(var i=0;i<gorillas.length;i++)drawG(gorillas[i]);
+  drawSky();drawClouds();drawBld();drawPU();for(var i=0;i<gorillas.length;i++)drawG(gorillas[i]);
   drawTraj();drawBan();drawExps();drawP();ctx.restore();
   drawW();drawConf();
-  if(!paused){if(state==='fly')stepBan();if(state==='boom')stepExps();stepP();stepW();stepConf()}
+  if(!paused){if(state==='fly')stepBan();if(state==='boom')stepExps();stepP();stepW();stepConf();stepClouds()}
   requestAnimationFrame(mainLoop);
 }
 function layout(){TH=THEMES[arena];makeBld();makeStars();placeG();spawnPU();initW();
-  var bg=TH.bg;document.getElementById('wrap').style.background='linear-gradient(180deg,'+bg[0]+' 0%,'+bg[1]+' 25%,'+bg[2]+' 50%,'+bg[3]+' 75%,'+bg[4]+' 100%)'}
+  var bg=TH.bg;document.getElementById('wrap').style.background='linear-gradient(180deg,'+bg[0]+' 0%,'+bg[0]+' 10%,'+bg[1]+' 25%,'+bg[2]+' 40%,'+bg[2]+' 50%,'+bg[3]+' 65%,'+bg[3]+' 80%,'+bg[4]+' 100%)'}
 
 // ---- UI ----
 document.getElementById('fsBtn').addEventListener('click',function(){var e=document.documentElement;if(!document.fullscreenElement&&!document.webkitFullscreenElement){if(e.requestFullscreen)e.requestFullscreen();else if(e.webkitRequestFullscreen)e.webkitRequestFullscreen()}else{if(document.exitFullscreen)document.exitFullscreen();else if(document.webkitExitFullscreen)document.webkitExitFullscreen()}});
