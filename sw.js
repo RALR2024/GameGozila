@@ -1,4 +1,4 @@
-var CACHE='gorilas-v8';
+var CACHE='gorilas-v9';
 var URLS=[
   './',
   './index.html',
