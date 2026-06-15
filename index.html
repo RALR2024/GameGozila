@@ -310,6 +310,7 @@ var shake={i:0},weapon='normal';
 var weather='clear',wDrops=[],ltn={f:0,nb:0};
 var cam={x:0,y:0,z:1,tx:0,ty:0,tz:1};
 var clouds=[];
+var smoke=[];
 var gameMode='cpu',arena='neon',difficulty='normal',lives=3;
 var flashEl=document.getElementById('screenFlash');
 var TH;
@@ -381,7 +382,7 @@ function spawnPU(){
 function newRound(){
   round++;makeBld();makeStars();placeG();spawnPU();initW();
   wind=Math.round(rand(-TH.wMax,TH.wMax));
-  banana=null;explosions=[];particles=[];trail=[];
+  banana=null;explosions=[];particles=[];trail=[];smoke=[];
   cam.x=W/2;cam.y=H/2;cam.z=1;cam.tx=W/2;cam.ty=H/2;cam.tz=1;
   turn=Math.random()>.5?0:1;updWind();elRnd.textContent=''+round;
   state='aim';updPU();
@@ -468,12 +469,17 @@ function drawBan(){
   ctx.restore();
 }
 function drawExps(){
-  for(var i=0;i<explosions.length;i++){var e=explosions[i];ctx.save();ctx.shadowColor='#ff8030';ctx.shadowBlur=30;var g=ctx.createRadialGradient(e.x,e.y,0,e.x,e.y,e.r);g.addColorStop(0,'rgba(255,255,220,0.98)');g.addColorStop(.3,'rgba(255,200,60,0.95)');g.addColorStop(.65,'rgba(255,110,40,0.85)');g.addColorStop(1,'rgba(200,40,30,0)');ctx.fillStyle=g;ctx.beginPath();ctx.arc(e.x,e.y,e.r,0,7);ctx.fill();if(e.r>10){var a=Math.max(0,1-e.r/e.max);ctx.strokeStyle='rgba(255,255,255,'+a+')';ctx.lineWidth=2+a*3;ctx.beginPath();ctx.arc(e.x,e.y,e.r*1.4,0,7);ctx.stroke()}ctx.restore()}
+  for(var i=0;i<explosions.length;i++){var e=explosions[i];ctx.save();ctx.shadowColor='#ff8030';ctx.shadowBlur=30;var g=ctx.createRadialGradient(e.x,e.y,0,e.x,e.y,e.r);g.addColorStop(0,'rgba(255,255,220,0.98)');g.addColorStop(.3,'rgba(255,200,60,0.95)');g.addColorStop(.65,'rgba(255,110,40,0.85)');g.addColorStop(1,'rgba(200,40,30,0)');ctx.fillStyle=g;ctx.beginPath();ctx.arc(e.x,e.y,e.r,0,7);ctx.fill();
+    if(e.ringOp>0){ctx.globalAlpha=e.ringOp;ctx.strokeStyle='rgba(255,220,180,0.8)';ctx.lineWidth=Math.max(1,4*e.ringOp);ctx.beginPath();ctx.arc(e.x,e.y,e.ring,0,7);ctx.stroke();ctx.globalAlpha=1}
+    ctx.restore()}
 }
 function spawnP(x,y,n,big){for(var i=0;i<n;i++){var a=rand(0,6.28),sp=rand(1,big?9:5);particles.push({x:x,y:y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-1,life:1,r:rand(2,big?6:4),col:Math.random()>.5?'#ffd83b':(Math.random()>.5?'#ff7a30':'#ff4040')})}}
-function spawnDeb(x,y,col){for(var i=0;i<10;i++){var a=rand(-Math.PI,-.2),sp=rand(2,7);particles.push({x:x,y:y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:1,r:rand(3,7),col:col,rect:true})}}
-function stepP(){for(var i=particles.length-1;i>=0;i--){var p=particles[i];p.vy+=.22;p.x+=p.vx;p.y+=p.vy;p.life-=.025;if(p.life<=0)particles.splice(i,1)}}
-function drawP(){for(var i=0;i<particles.length;i++){var p=particles[i];ctx.globalAlpha=Math.max(0,p.life);ctx.fillStyle=p.col;if(p.rect)ctx.fillRect(p.x-p.r/2,p.y-p.r/2,p.r,p.r);else{ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,7);ctx.fill()}}ctx.globalAlpha=1}
+function spawnDeb(x,y,col){for(var i=0;i<10;i++){var a=rand(-Math.PI,-.2),sp=rand(2,7);particles.push({x:x,y:y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:1,r:rand(3,7),col:col,rect:true,rot:rand(0,6.28),rv:rand(-.15,.15)})}}
+function stepP(){for(var i=particles.length-1;i>=0;i--){var p=particles[i];p.vy+=.22;p.x+=p.vx;p.y+=p.vy;if(p.rv)p.rot+=p.rv;p.life-=.025;if(p.life<=0)particles.splice(i,1)}}
+function drawP(){for(var i=0;i<particles.length;i++){var p=particles[i];ctx.globalAlpha=Math.max(0,p.life);ctx.fillStyle=p.col;if(p.rect){ctx.save();ctx.translate(p.x,p.y);if(p.rot)ctx.rotate(p.rot);ctx.fillRect(-p.r/2,-p.r/2,p.r,p.r);ctx.restore()}else{ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,7);ctx.fill()}}ctx.globalAlpha=1}
+function spawnSmoke(x,y){var n=Math.floor(rand(8,13));for(var i=0;i<n;i++){if(smoke.length>=50)smoke.shift();smoke.push({x:x+rand(-10,10),y:y+rand(-5,5),vx:rand(-.3,.3),vy:rand(-.8,-.2),r:rand(6,14),life:1})}}
+function stepSmoke(){for(var i=smoke.length-1;i>=0;i--){var s=smoke[i];s.x+=s.vx;s.vy-=.005;s.y+=s.vy;s.r+=.08;s.life-=.008;if(s.life<=0)smoke.splice(i,1)}}
+function drawSmoke(){for(var i=0;i<smoke.length;i++){var s=smoke[i];ctx.globalAlpha=Math.max(0,s.life*.5);ctx.fillStyle='rgba(80,80,80,1)';ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,7);ctx.fill()}ctx.globalAlpha=1}
 function drawTraj(){
   if(state!=='aim')return;
   var gi=(gameMode==='2p')?turn:0;if(gameMode!=='2p'&&turn!==0)return;
@@ -567,7 +573,7 @@ function hitBld(x,y,b){
     var offsets=[{dx:0,dy:0},{dx:-30,dy:-20},{dx:30,dy:-10}];
     for(var i=0;i<offsets.length;i++){startExp(x+offsets[i].dx,y+offsets[i].dy,false,false)}
   }else{startExp(x,y,false,mega)}
-  spawnDeb(x,y,b.c2);b.h=Math.max(10,H-y-(mega?35:15));banana=null;
+  spawnDeb(x,y,b.c2);if(!b.craters)b.craters=[];b.craters.push(x);b.h=Math.max(10,H-y-(mega?35:15));banana=null;
 }
 function hitG(idx){
   var mega=banana.mega,isCluster=banana.wt==='cluster';
@@ -586,13 +592,13 @@ function hitG(idx){
 }
 function missShot(){banana=null;nextT()}
 function startExp(x,y,big,mega){
-  var maxR=big?(mega?130:80):(mega?65:42);explosions.push({x:x,y:y,r:1,max:maxR,big:big});
-  spawnP(x,y,big?(mega?60:40):(mega?30:22),big);trail=[];state='boom';
+  var maxR=big?(mega?130:80):(mega?65:42);explosions.push({x:x,y:y,r:1,max:maxR,big:big,ring:1,ringOp:.6});
+  spawnP(x,y,big?(mega?60:40):(mega?30:22),big);spawnSmoke(x,y);trail=[];state='boom';
   SFX.explode(big||mega);shake.i=big?(mega?22:14):(mega?10:6);if(big)vibrate([40,20,80]);else vibrate(40);
 }
 function stepExps(){
   var anyBig=false;
-  for(var i=explosions.length-1;i>=0;i--){explosions[i].r+=explosions[i].big?5:4;if(explosions[i].big)anyBig=true;if(explosions[i].r>=explosions[i].max)explosions.splice(i,1)}
+  for(var i=explosions.length-1;i>=0;i--){var e=explosions[i];e.r+=e.big?5:4;e.ring+=(e.big?10:8);e.ringOp-=.04;if(e.big)anyBig=true;if(e.r>=e.max)explosions.splice(i,1)}
   if(explosions.length===0&&state==='boom'){if(!anyBig)nextT()}
 }
 function nextT(){
@@ -608,9 +614,9 @@ function mainLoop(){
   if(shake.i>.3){ctx.translate((Math.random()-.5)*shake.i,(Math.random()-.5)*shake.i);shake.i*=.88;if(shake.i<.3)shake.i=0}
   ctx.translate(W/2,H/2);ctx.scale(cam.z,cam.z);ctx.translate(-cam.x,-cam.y);
   drawSky();drawClouds();drawBld();drawPU();for(var i=0;i<gorillas.length;i++)drawG(gorillas[i]);
-  drawTraj();drawBan();drawExps();drawP();ctx.restore();
+  drawTraj();drawBan();drawExps();drawP();drawSmoke();ctx.restore();
   drawW();drawConf();
-  if(!paused){if(state==='fly')stepBan();if(state==='boom')stepExps();stepP();stepW();stepConf();stepClouds()}
+  if(!paused){if(state==='fly')stepBan();if(state==='boom')stepExps();stepP();stepSmoke();stepW();stepConf();stepClouds()}
   requestAnimationFrame(mainLoop);
 }
 function layout(){TH=THEMES[arena];makeBld();makeStars();placeG();spawnPU();initW();
