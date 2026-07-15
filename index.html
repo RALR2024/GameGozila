@@ -172,6 +172,7 @@ input[type=range]::-moz-range-thumb{width:38px;height:38px;border-radius:50%;bac
   <div class="selRow" id="diffRow"><button class="selBtn" data-diff="beginner">Novato</button><button class="selBtn" data-diff="easy">Facil</button><button class="selBtn active" data-diff="normal">Normal</button><button class="selBtn" data-diff="hard">Dificil</button></div>
   <div class="selRow" id="diffRow2"><button class="selBtn" data-diff="expert">Experto</button><button class="selBtn locked" data-diff="master">&#x1F512;</button><button class="selBtn locked" data-diff="impossible">&#x1F512;</button></div>
   <button class="btn" id="startBtn" style="margin-top:14px">JUGAR</button>
+  <div class="stats" id="coinBal" style="font-weight:700">&#x1FA99; 0</div>
   <div class="stats" id="statsLine"></div>
   <div class="siteNav">
     <a href="acerca.html">Acerca de</a>
@@ -284,7 +285,10 @@ var ACHS=[
   {id:'boom_hit',name:'Curva Mortal',icon:'🪃',desc:'Acierta con boomerang'},
   {id:'round10',name:'Superviviente',icon:'⭐',desc:'Ronda 10 en infinito'},
   {id:'explorer',name:'Explorador',icon:'🌍',desc:'Juega en 3 arenas'},
-  {id:'friendly',name:'Amistoso',icon:'🤝',desc:'Partida 2P completa'}
+  {id:'friendly',name:'Amistoso',icon:'🤝',desc:'Partida 2P completa'},
+  {id:'coin_100',name:'Alcancía',icon:'🪙',desc:'Acumula 100 monedas'},
+  {id:'rich',name:'Ricachón',icon:'💰',desc:'Acumula 500 monedas'},
+  {id:'beat_impossible',name:'Leyenda',icon:'👑',desc:'Vence en Imposible'}
 ];
 function rand(a,b){return a+Math.random()*(b-a)}
 function lerp(a,b,t){return a+(b-a)*t}
@@ -298,8 +302,15 @@ function updDiffUI(){var u=loadUnlocked();var btns=document.querySelectorAll('#d
 function loadStats(){return LS('gs4')||{w:0,l:0,g:0,hi:0,arenas:[]}}
 function saveStats(won,inf){var s=loadStats();s.g++;if(won)s.w++;else s.l++;if(inf&&round>s.hi)s.hi=round;if(s.arenas.indexOf(arena)<0)s.arenas.push(arena);LS('gs4',s);return s}
 function showStats(id){var s=loadStats(),el=document.getElementById(id);if(!el)return;var t='';if(s.g>0)t=s.w+'W/'+s.l+'L';if(s.hi>0)t+=' | Infinito: Ronda '+s.hi;el.textContent=t}
+function updCoinsUI(){var el=document.getElementById('coinBal');if(el)el.textContent='🪙 '+getCoins()}
 function loadAch(){return LS('gach')||{}}
 function unlockAch(id){var a=loadAch();if(a[id])return;a[id]=1;LS('gach',a);var info;for(var i=0;i<ACHS.length;i++)if(ACHS[i].id===id)info=ACHS[i];if(!info)return;SFX.ach();document.getElementById('achIcon').textContent=info.icon;document.getElementById('achName').textContent=info.name;document.getElementById('achDesc').textContent=info.desc;var el=document.getElementById('achPopup');el.classList.add('show');setTimeout(function(){el.classList.remove('show')},2500)}
+
+// ---- Economy ----
+function getCoins(){var c=LS('gcoins');return typeof c==='number'?c:0}
+function diffMult(diff){return {beginner:1,easy:1,normal:1.5,hard:2,expert:2.5,master:3,impossible:3}[diff]||1}
+function addCoins(n){var c=getCoins()+Math.round(n);LS('gcoins',c);if(typeof updCoinsUI==='function')updCoinsUI();if(c>=100)unlockAch('coin_100');if(c>=500)unlockAch('rich');return c}
+function spendCoins(n){if(n<0)return false;var c=getCoins();if(c<n)return false;LS('gcoins',c-n);if(typeof updCoinsUI==='function')updCoinsUI();return true}
 
 // ---- Canvas ----
 var cv=document.getElementById('game'),ctx=cv.getContext('2d'),W,H,DPR;
@@ -727,9 +738,14 @@ function endGame(){
   if(won){SFX.win();spawnConf();unlockAch('first_win');if(pDmgTaken===0&&gameMode!=='infinite')unlockAch('no_damage')}else SFX.lose();
   if(gameMode==='2p')unlockAch('friendly');
   if(won&&gameMode!=='2p')tryUnlock(difficulty);
+  if(won&&gameMode==='cpu'&&difficulty==='impossible')unlockAch('beat_impossible');
+  var earned=0;
+  if(gameMode==='infinite'){earned=Math.floor(round/5)*5;}
+  else if(won){earned=Math.round(10*diffMult(difficulty));}
+  if(earned>0)addCoins(earned);
 }
 
-updDiffUI();layout();showStats('statsLine');mainLoop();
+updDiffUI();layout();showStats('statsLine');updCoinsUI();mainLoop();
 </script>
 </body>
 </html>
