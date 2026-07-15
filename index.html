@@ -735,6 +735,10 @@ function endGame(){
   if(won){SFX.win();spawnConf();unlockAch('first_win');if(pDmgTaken===0&&gameMode!=='infinite')unlockAch('no_damage')}else SFX.lose();
   if(gameMode==='2p')unlockAch('friendly');
   if(won&&gameMode!=='2p')tryUnlock(difficulty);
+  var earned=0;
+  if(gameMode==='infinite'){earned=Math.floor(round/5)*5;}
+  else if(won){earned=Math.round(10*diffMult(difficulty));}
+  if(earned>0)addCoins(earned);
 }
 
 updDiffUI();layout();showStats('statsLine');updCoinsUI();mainLoop();
