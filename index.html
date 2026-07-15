@@ -301,6 +301,12 @@ function showStats(id){var s=loadStats(),el=document.getElementById(id);if(!el)r
 function loadAch(){return LS('gach')||{}}
 function unlockAch(id){var a=loadAch();if(a[id])return;a[id]=1;LS('gach',a);var info;for(var i=0;i<ACHS.length;i++)if(ACHS[i].id===id)info=ACHS[i];if(!info)return;SFX.ach();document.getElementById('achIcon').textContent=info.icon;document.getElementById('achName').textContent=info.name;document.getElementById('achDesc').textContent=info.desc;var el=document.getElementById('achPopup');el.classList.add('show');setTimeout(function(){el.classList.remove('show')},2500)}
 
+// ---- Economy ----
+function getCoins(){var c=LS('gcoins');return typeof c==='number'?c:0}
+function diffMult(diff){return {beginner:1,easy:1,normal:1.5,hard:2,expert:2.5,master:3,impossible:3}[diff]||1}
+function addCoins(n){var c=getCoins()+Math.round(n);LS('gcoins',c);if(typeof updCoinsUI==='function')updCoinsUI();if(c>=100)unlockAch('coin_100');if(c>=500)unlockAch('rich');return c}
+function spendCoins(n){var c=getCoins();if(c<n)return false;LS('gcoins',c-n);if(typeof updCoinsUI==='function')updCoinsUI();return true}
+
 // ---- Canvas ----
 var cv=document.getElementById('game'),ctx=cv.getContext('2d'),W,H,DPR;
 function resize(){DPR=Math.min(window.devicePixelRatio||1,2);W=window.innerWidth;H=window.innerHeight;cv.width=W*DPR;cv.height=H*DPR;cv.style.width=W+'px';cv.style.height=H+'px';ctx.setTransform(DPR,0,0,DPR,0,0)}
