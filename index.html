@@ -285,7 +285,10 @@ var ACHS=[
   {id:'boom_hit',name:'Curva Mortal',icon:'🪃',desc:'Acierta con boomerang'},
   {id:'round10',name:'Superviviente',icon:'⭐',desc:'Ronda 10 en infinito'},
   {id:'explorer',name:'Explorador',icon:'🌍',desc:'Juega en 3 arenas'},
-  {id:'friendly',name:'Amistoso',icon:'🤝',desc:'Partida 2P completa'}
+  {id:'friendly',name:'Amistoso',icon:'🤝',desc:'Partida 2P completa'},
+  {id:'coin_100',name:'Alcancía',icon:'🪙',desc:'Acumula 100 monedas'},
+  {id:'rich',name:'Ricachón',icon:'💰',desc:'Acumula 500 monedas'},
+  {id:'beat_impossible',name:'Leyenda',icon:'👑',desc:'Vence en Imposible'}
 ];
 function rand(a,b){return a+Math.random()*(b-a)}
 function lerp(a,b,t){return a+(b-a)*t}
@@ -735,6 +738,7 @@ function endGame(){
   if(won){SFX.win();spawnConf();unlockAch('first_win');if(pDmgTaken===0&&gameMode!=='infinite')unlockAch('no_damage')}else SFX.lose();
   if(gameMode==='2p')unlockAch('friendly');
   if(won&&gameMode!=='2p')tryUnlock(difficulty);
+  if(won&&gameMode==='cpu'&&difficulty==='impossible')unlockAch('beat_impossible');
   var earned=0;
   if(gameMode==='infinite'){earned=Math.floor(round/5)*5;}
   else if(won){earned=Math.round(10*diffMult(difficulty));}
