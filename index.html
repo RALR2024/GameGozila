@@ -172,6 +172,7 @@ input[type=range]::-moz-range-thumb{width:38px;height:38px;border-radius:50%;bac
   <div class="selRow" id="diffRow"><button class="selBtn" data-diff="beginner">Novato</button><button class="selBtn" data-diff="easy">Facil</button><button class="selBtn active" data-diff="normal">Normal</button><button class="selBtn" data-diff="hard">Dificil</button></div>
   <div class="selRow" id="diffRow2"><button class="selBtn" data-diff="expert">Experto</button><button class="selBtn locked" data-diff="master">&#x1F512;</button><button class="selBtn locked" data-diff="impossible">&#x1F512;</button></div>
   <button class="btn" id="startBtn" style="margin-top:14px">JUGAR</button>
+  <div class="stats" id="coinBal" style="font-weight:700">&#x1FA99; 0</div>
   <div class="stats" id="statsLine"></div>
   <div class="siteNav">
     <a href="acerca.html">Acerca de</a>
@@ -298,6 +299,7 @@ function updDiffUI(){var u=loadUnlocked();var btns=document.querySelectorAll('#d
 function loadStats(){return LS('gs4')||{w:0,l:0,g:0,hi:0,arenas:[]}}
 function saveStats(won,inf){var s=loadStats();s.g++;if(won)s.w++;else s.l++;if(inf&&round>s.hi)s.hi=round;if(s.arenas.indexOf(arena)<0)s.arenas.push(arena);LS('gs4',s);return s}
 function showStats(id){var s=loadStats(),el=document.getElementById(id);if(!el)return;var t='';if(s.g>0)t=s.w+'W/'+s.l+'L';if(s.hi>0)t+=' | Infinito: Ronda '+s.hi;el.textContent=t}
+function updCoinsUI(){var el=document.getElementById('coinBal');if(el)el.textContent='🪙 '+getCoins()}
 function loadAch(){return LS('gach')||{}}
 function unlockAch(id){var a=loadAch();if(a[id])return;a[id]=1;LS('gach',a);var info;for(var i=0;i<ACHS.length;i++)if(ACHS[i].id===id)info=ACHS[i];if(!info)return;SFX.ach();document.getElementById('achIcon').textContent=info.icon;document.getElementById('achName').textContent=info.name;document.getElementById('achDesc').textContent=info.desc;var el=document.getElementById('achPopup');el.classList.add('show');setTimeout(function(){el.classList.remove('show')},2500)}
 
@@ -735,7 +737,7 @@ function endGame(){
   if(won&&gameMode!=='2p')tryUnlock(difficulty);
 }
 
-updDiffUI();layout();showStats('statsLine');mainLoop();
+updDiffUI();layout();showStats('statsLine');updCoinsUI();mainLoop();
 </script>
 </body>
 </html>
