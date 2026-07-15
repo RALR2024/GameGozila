@@ -310,7 +310,7 @@ function unlockAch(id){var a=loadAch();if(a[id])return;a[id]=1;LS('gach',a);var 
 function getCoins(){var c=LS('gcoins');return typeof c==='number'?c:0}
 function diffMult(diff){return {beginner:1,easy:1,normal:1.5,hard:2,expert:2.5,master:3,impossible:3}[diff]||1}
 function addCoins(n){var c=getCoins()+Math.round(n);LS('gcoins',c);if(typeof updCoinsUI==='function')updCoinsUI();if(c>=100)unlockAch('coin_100');if(c>=500)unlockAch('rich');return c}
-function spendCoins(n){var c=getCoins();if(c<n)return false;LS('gcoins',c-n);if(typeof updCoinsUI==='function')updCoinsUI();return true}
+function spendCoins(n){if(n<0)return false;var c=getCoins();if(c<n)return false;LS('gcoins',c-n);if(typeof updCoinsUI==='function')updCoinsUI();return true}
 
 // ---- Canvas ----
 var cv=document.getElementById('game'),ctx=cv.getContext('2d'),W,H,DPR;
