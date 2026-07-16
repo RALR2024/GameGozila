@@ -312,6 +312,46 @@ function diffMult(diff){return {beginner:1,easy:1,normal:1.5,hard:2,expert:2.5,m
 function addCoins(n){var c=getCoins()+Math.round(n);LS('gcoins',c);if(typeof updCoinsUI==='function')updCoinsUI();if(c>=100)unlockAch('coin_100');if(c>=500)unlockAch('rich');return c}
 function spendCoins(n){if(n<0)return false;var c=getCoins();if(c<n)return false;LS('gcoins',c-n);if(typeof updCoinsUI==='function')updCoinsUI();return true}
 
+// ---- Cosmetics ----
+var COSMETICS={
+  fur:[
+    {id:'fur_default',name:'Clasico',cost:0,body:'#5a4636',dk:'#3d2f22',ch:'#7d6650',gl:'#7fffd4'},
+    {id:'fur_gold',name:'Dorado',cost:50,body:'#c8960a',dk:'#8a6508',ch:'#e0b020',gl:'#ffe95b'},
+    {id:'fur_blue',name:'Azul',cost:75,body:'#3f5f9a',dk:'#2a3f6a',ch:'#5f7fc0',gl:'#7fd4ff'},
+    {id:'fur_pink',name:'Rosa Neon',cost:100,body:'#d84f9a',dk:'#a03570',ch:'#ff7ac0',gl:'#ff9eec'},
+    {id:'fur_white',name:'Blanco',cost:100,body:'#d8d8e0',dk:'#9a9aac',ch:'#f0f0f8',gl:'#ffffff'},
+    {id:'fur_camo',name:'Camuflaje',cost:150,body:'#5a6b3a',dk:'#3d4a25',ch:'#7a8b50',gl:'#b0ff7f'}
+  ],
+  acc:[
+    {id:'acc_none',name:'Ninguno',cost:0,draw:null},
+    {id:'acc_cap',name:'Gorra',cost:100,draw:'cap'},
+    {id:'acc_glasses',name:'Gafas',cost:100,draw:'glasses'},
+    {id:'acc_band',name:'Diadema',cost:150,draw:'band'},
+    {id:'acc_crown',name:'Corona',cost:250,draw:'crown'}
+  ],
+  trail:[
+    {id:'trail_none',name:'Ninguna',cost:0,style:'default'},
+    {id:'trail_fire',name:'Fuego',cost:75,style:'fire'},
+    {id:'trail_rainbow',name:'Arcoiris',cost:150,style:'rainbow'},
+    {id:'trail_stars',name:'Estrellas',cost:150,style:'stars'},
+    {id:'trail_ice',name:'Hielo',cost:200,style:'ice'}
+  ],
+  boom:[
+    {id:'boom_default',name:'Clasica',cost:0,style:'default'},
+    {id:'boom_gold',name:'Dorada',cost:75,style:'gold'},
+    {id:'boom_rainbow',name:'Arcoiris',cost:150,style:'rainbow'},
+    {id:'boom_plasma',name:'Plasma',cost:200,style:'plasma'}
+  ]
+};
+function cosDefaults(){return {owned:['fur_default','acc_none','trail_none','boom_default'],equip:{fur:'fur_default',acc:'acc_none',trail:'trail_none',boom:'boom_default'}}}
+function loadCos(){var c=LS('gcos');if(!c||!c.owned||!c.equip)return cosDefaults();var d=cosDefaults();for(var i=0;i<d.owned.length;i++)if(c.owned.indexOf(d.owned[i])<0)c.owned.push(d.owned[i]);var cats=['fur','acc','trail','boom'];for(var j=0;j<cats.length;j++){if(!c.equip[cats[j]]||c.owned.indexOf(c.equip[cats[j]])<0)c.equip[cats[j]]=d.equip[cats[j]]}return c}
+function cosItem(cat,id){var arr=COSMETICS[cat]||[];for(var i=0;i<arr.length;i++)if(arr[i].id===id)return arr[i];return arr[0]}
+function equipped(cat){return cosItem(cat,loadCos().equip[cat])}
+function ownsCos(id){return loadCos().owned.indexOf(id)>=0}
+function cosCatOf(id){var cats=['fur','acc','trail','boom'];for(var i=0;i<cats.length;i++){var arr=COSMETICS[cats[i]];for(var j=0;j<arr.length;j++)if(arr[j].id===id)return cats[i]}return null}
+function buyCos(id){var cat=cosCatOf(id);if(!cat)return 'bad';if(ownsCos(id))return 'owned';var it=cosItem(cat,id);if(!spendCoins(it.cost))return 'nofunds';var c=loadCos();c.owned.push(id);LS('gcos',c);var paid=0;for(var i=0;i<c.owned.length;i++)if((cosItem(cosCatOf(c.owned[i]),c.owned[i])||{}).cost>0)paid++;if(paid>=5)unlockAch('collector');if(typeof updCoinsUI==='function')updCoinsUI();return 'ok'}
+function equipCos(cat,id){if(!ownsCos(id))return false;if(cosCatOf(id)!==cat)return false;var c=loadCos();c.equip[cat]=id;LS('gcos',c);return true}
+
 // ---- Canvas ----
 var cv=document.getElementById('game'),ctx=cv.getContext('2d'),W,H,DPR;
 function resize(){DPR=Math.min(window.devicePixelRatio||1,2);W=window.innerWidth;H=window.innerHeight;cv.width=W*DPR;cv.height=H*DPR;cv.style.width=W+'px';cv.style.height=H+'px';ctx.setTransform(DPR,0,0,DPR,0,0)}
