@@ -418,6 +418,18 @@ function dayOfYear(){var d=new Date();var start=new Date(d.getFullYear(),0,0);re
 function loadDaily(){return LS('gdaily')}
 function saveDaily(o){LS('gdaily',o)}
 function loadStreak(){var s=LS('gstreak');return(s&&typeof s.count==='number')?s:{last:'',count:0}}
+var DAILY_OBJS=[
+  {id:'only_boomerang',desc:'Gana usando solo boomerang',test:function(){return !!dWeapons.boomerang&&!dWeapons.normal&&!dWeapons.cluster}},
+  {id:'no_damage',desc:'Gana sin recibir ningun golpe',test:function(){return pDmgTaken===0}},
+  {id:'three_shots',desc:'Gana en 3 tiros o menos',test:function(){return pShots<=3}},
+  {id:'only_cluster',desc:'Gana usando solo racimo',test:function(){return !!dWeapons.cluster&&!dWeapons.normal&&!dWeapons.boomerang}},
+  {id:'only_normal',desc:'Gana usando solo banana normal',test:function(){return !!dWeapons.normal&&!dWeapons.cluster&&!dWeapons.boomerang}},
+  {id:'streak3',desc:'Gana con una racha de 3 aciertos',test:function(){return streakMax>=3}},
+  {id:'collect_pu',desc:'Gana recogiendo un power-up',test:function(){return dPUCollected}}
+];
+function dailyObj(){return DAILY_OBJS[dayOfYear()%DAILY_OBJS.length]}
+function bumpStreak(){var s=loadStreak(),today=todayStr();if(s.last===today)return;s.count=(s.last===yesterdayStr())?s.count+1:1;s.last=today;LS('gstreak',s);if(s.count>=7)unlockAch('devotee')}
+function startDaily(){dailyRng=mulberry32(hashStr(todayStr()));dailyMode=true;arena=['neon','jungle','space'][Math.floor(rng()*3)];difficulty=['normal','hard','expert'][Math.floor(rng()*3)];gameMode='cpu';if(typeof closeDaily==='function')closeDaily();startGame()}
 
 // ---- Canvas ----
 var cv=document.getElementById('game'),ctx=cv.getContext('2d'),W,H,DPR;
@@ -819,7 +831,7 @@ bindSel('diffRow2',function(b){if(b.classList.contains('locked'))return;var d1bt
 
 function pauseG(){if(state==='start'||state==='end')return;paused=true;document.getElementById('pauseScreen').classList.remove('hidden');elCtrl.classList.add('disabled')}
 function resumeG(){paused=false;document.getElementById('pauseScreen').classList.add('hidden');var isH=(gameMode==='2p')||(turn===0);if(state==='aim'&&isH)elCtrl.classList.remove('disabled')}
-function goHome(){paused=false;document.getElementById('pauseScreen').classList.add('hidden');document.getElementById('endScreen').classList.add('hidden');document.getElementById('startScreen').classList.remove('hidden');state='start';SFX.stopM();layout();showStats('statsLine')}
+function goHome(){dailyMode=false;dailyRng=null;paused=false;document.getElementById('pauseScreen').classList.add('hidden');document.getElementById('endScreen').classList.add('hidden');document.getElementById('startScreen').classList.remove('hidden');state='start';SFX.stopM();layout();showStats('statsLine')}
 function startGame(){
   SFX.init();SFX.resume();SFX.startM();TH=THEMES[arena];
   document.getElementById('startScreen').classList.add('hidden');document.getElementById('endScreen').classList.add('hidden');
@@ -866,6 +878,12 @@ function endGame(){
   if(gameMode==='infinite'){earned=Math.floor(round/5)*5;}
   else if(won){earned=Math.round(10*diffMult(difficulty));}
   if(earned>0)addCoins(earned);
+  if(dailyMode){var dd=loadDaily(),obj=dailyObj(),already=!!(dd&&dd.done&&dd.date===todayStr());
+    var passed=won&&obj.test();
+    saveDaily({date:todayStr(),done:already||passed,obj:obj.id,tries:((dd&&dd.date===todayStr()&&dd.tries)||0)+1});
+    if(passed&&!already){addCoins(50);bumpStreak();unlockAch('daily_first');
+      document.getElementById('endText').textContent='Reto diario completado! +50 🪙';}
+    dailyMode=false;dailyRng=null;}
 }
 
 updDiffUI();layout();showStats('statsLine');updCoinsUI();mainLoop();
