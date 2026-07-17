@@ -437,6 +437,7 @@ var clouds=[];
 var smoke=[];
 var cpuLastShot=null;
 var gameMode='cpu',arena='neon',difficulty='normal',lives=3;
+var pShots=0,dWeapons={},dPUCollected=false,streakMax=0,dailyMode=false;
 var flashEl=document.getElementById('screenFlash');
 var TH;
 
@@ -701,6 +702,7 @@ cv.addEventListener('mouseup',function(){if(!touchAim)return;touchAim=null;fireF
 function fireBan(x,y,vx,vy,from){
   var pu=from===0?playerPU:cpuPU;
   banana={x:x,y:y,vx:vx,vy:vy,rot:0,age:0,from:from,mega:pu==='mega',noW:pu==='calm',wt:weapon};
+  if(from===0){pShots++;dWeapons[weapon]=true}
   gorillas[from].throwAnim=Date.now();
   if(from===0)playerPU=null;else cpuPU=null;updPU();state='fly';SFX.throw_sound();vibrate(30);
 }
@@ -740,7 +742,7 @@ function stepBan(){
   banana.x+=banana.vx;banana.y+=banana.vy;banana.rot+=.3;banana.age++;
   trail.push({x:banana.x,y:banana.y});if(trail.length>12)trail.shift();
   if(banana.x<-40||banana.x>W+40||banana.y>H+60){missShot();return}
-  for(var pi=0;pi<powerUps.length;pi++){var pu=powerUps[pi];if(pu.collected)continue;if(Math.hypot(banana.x-pu.x,banana.y-pu.y)<35){pu.collected=true;if(banana.from===0)playerPU=pu.type;else cpuPU=pu.type;spawnP(pu.x,pu.y,15,false);SFX.collect();updPU()}}
+  for(var pi=0;pi<powerUps.length;pi++){var pu=powerUps[pi];if(pu.collected)continue;if(Math.hypot(banana.x-pu.x,banana.y-pu.y)<35){pu.collected=true;if(banana.from===0){playerPU=pu.type;dPUCollected=true}else cpuPU=pu.type;spawnP(pu.x,pu.y,15,false);SFX.collect();updPU()}}
   for(var i=0;i<gorillas.length;i++){var go=gorillas[i],s=go._s||30;if(i===banana.from&&banana.age<8)continue;if(Math.hypot(banana.x-go.x,banana.y-(go.y-s))<s*.95){hitG(i);return}}
   for(var bi=0;bi<buildings.length;bi++){var b=buildings[bi];if(banana.x>b.x&&banana.x<b.x+b.w&&banana.y>H-b.h){hitBld(banana.x,banana.y,b);return}}
 }
@@ -762,7 +764,7 @@ function hitG(idx){
   gorillas[idx].expr='hurt';setTimeout(function(){gorillas[idx].expr='neutral'},1000);
   gorillas[1-idx].expr='happy';setTimeout(function(){gorillas[1-idx].expr='neutral'},1500);
   if(banana&&banana.wt==='boomerang')unlockAch('boom_hit');
-  if(idx===1){pScore++;elPS.textContent=pScore;streak++;if(streak>=2){showStr(streak);SFX.streak()}if(streak>=3)unlockAch('streak3')}
+  if(idx===1){pScore++;elPS.textContent=pScore;streak++;if(streak>streakMax)streakMax=streak;if(streak>=2){showStr(streak);SFX.streak()}if(streak>=3)unlockAch('streak3')}
   else{cScore++;elCS.textContent=cScore;streak=0;if(gameMode==='infinite'){lives--;var h='';for(var i=0;i<lives;i++)h+='❤';elLives.textContent=h}pDmgTaken++}
   vibrate([50,30,100]);flashEl.style.opacity='.5';setTimeout(function(){flashEl.style.opacity='0'},80);
   var wait=function(){if(paused){setTimeout(wait,400);return}
@@ -823,6 +825,7 @@ function startGame(){
   document.getElementById('startScreen').classList.add('hidden');document.getElementById('endScreen').classList.add('hidden');
   document.getElementById('pauseScreen').classList.add('hidden');
   paused=false;pScore=0;cScore=0;round=0;streak=0;pDmgTaken=0;lives=3;
+  pShots=0;dWeapons={};dPUCollected=false;streakMax=0;
   playerPU=null;cpuPU=null;confetti=[];weapon='normal';
   elPS.textContent='0';elCS.textContent='0';
   elLP.textContent=gameMode==='2p'?'P1':'Tu';elLC.textContent=gameMode==='2p'?'P2':'CPU';
