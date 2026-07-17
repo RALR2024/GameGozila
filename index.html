@@ -566,7 +566,7 @@ function drawBan(){
   ctx.restore();
 }
 function drawExps(){
-  for(var i=0;i<explosions.length;i++){var e=explosions[i];ctx.save();ctx.shadowColor='#ff8030';ctx.shadowBlur=30;var g=ctx.createRadialGradient(e.x,e.y,0,e.x,e.y,e.r);g.addColorStop(0,'rgba(255,255,220,0.98)');g.addColorStop(.3,'rgba(255,200,60,0.95)');g.addColorStop(.65,'rgba(255,110,40,0.85)');g.addColorStop(1,'rgba(200,40,30,0)');ctx.fillStyle=g;ctx.beginPath();ctx.arc(e.x,e.y,e.r,0,7);ctx.fill();
+  for(var i=0;i<explosions.length;i++){var e=explosions[i];ctx.save();var bs=e.boom||'default';var sc='#ff8030',cs;if(bs==='gold'){sc='#ffcf40';cs=['rgba(255,255,230,0.98)','rgba(255,215,90,0.95)','rgba(230,160,30,0.85)','rgba(150,90,10,0)'];}else if(bs==='rainbow'){sc='#ff5edb';cs=['rgba(255,255,255,0.98)','rgba(120,220,255,0.95)','rgba(200,100,255,0.85)','rgba(255,80,160,0)'];}else if(bs==='plasma'){sc='#40e0ff';cs=['rgba(240,255,255,0.98)','rgba(90,220,255,0.95)','rgba(140,90,255,0.85)','rgba(60,20,120,0)'];}else{cs=['rgba(255,255,220,0.98)','rgba(255,200,60,0.95)','rgba(255,110,40,0.85)','rgba(200,40,30,0)'];}ctx.shadowColor=sc;ctx.shadowBlur=30;var g=ctx.createRadialGradient(e.x,e.y,0,e.x,e.y,e.r);g.addColorStop(0,cs[0]);g.addColorStop(.3,cs[1]);g.addColorStop(.65,cs[2]);g.addColorStop(1,cs[3]);ctx.fillStyle=g;ctx.beginPath();ctx.arc(e.x,e.y,e.r,0,7);ctx.fill();
     if(e.ringOp>0){ctx.globalAlpha=e.ringOp;ctx.strokeStyle='rgba(255,220,180,0.8)';ctx.lineWidth=Math.max(1,4*e.ringOp);ctx.beginPath();ctx.arc(e.x,e.y,e.ring,0,7);ctx.stroke();ctx.globalAlpha=1}
     ctx.restore()}
 }
@@ -706,7 +706,7 @@ function hitG(idx){
 }
 function missShot(){if(banana&&cpuLastShot&&banana.from===1){cpuLastShot.hitX=banana.x;cpuLastShot.hitY=banana.y}banana=null;nextT()}
 function startExp(x,y,big,mega){
-  var maxR=big?(mega?130:80):(mega?65:42);explosions.push({x:x,y:y,r:1,max:maxR,big:big,ring:1,ringOp:.6});
+  var maxR=big?(mega?130:80):(mega?65:42);var bst=(banana&&banana.from===0&&gameMode!=='2p')?equipped('boom').style:'default';explosions.push({x:x,y:y,r:1,max:maxR,big:big,ring:1,ringOp:.6,boom:bst});
   spawnP(x,y,big?(mega?60:40):(mega?30:22),big);spawnSmoke(x,y);trail=[];state='boom';
   SFX.explode(big||mega);shake.i=big?(mega?22:14):(mega?10:6);if(big)vibrate([40,20,80]);else vibrate(40);
 }
