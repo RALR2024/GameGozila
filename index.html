@@ -488,28 +488,28 @@ function makeStars(){stars=[];var n=Math.floor(W*H/(arena==='space'?4000:9000));
   for(var i=0;i<nc;i++)clouds.push({x:rand(0,W),y:rand(H*.08,H*.35),w:rand(60,140),h:rand(20,40),sp:rand(.08,.2),op:rand(.03,.06)*opMul})}
 function makeBld(){
   buildings=[];var n=Math.max(8,Math.min(14,Math.round(W/70))),bw=W/n;
-  for(var i=0;i<n;i++){var h=rand(H*.16,H*.55),c=TH.bldC[i%TH.bldC.length],ne=TH.neon[Math.floor(rand(0,TH.neon.length))];
+  for(var i=0;i<n;i++){var h=rrand(H*.16,H*.55),c=TH.bldC[i%TH.bldC.length],ne=TH.neon[Math.floor(rrand(0,TH.neon.length))];
     var cols=Math.floor((bw-8)/14),rows=Math.floor(h/20);
     var winOn=[];for(var wi=0;wi<cols*rows;wi++)winOn.push(Math.random()<.45);
     buildings.push({x:i*bw,w:bw,h:h,c1:c[0],c2:c[1],neon:ne,ant:Math.random()>.6,cols:cols,rows:rows,winOn:winOn,craters:[]})}
 }
 function placeG(){
-  var li=Math.floor(rand(0,Math.min(3,buildings.length))),ri=Math.floor(rand(Math.max(buildings.length-3,0),buildings.length));
+  var li=Math.floor(rrand(0,Math.min(3,buildings.length))),ri=Math.floor(rrand(Math.max(buildings.length-3,0),buildings.length));
   function s(idx,who){var b=buildings[idx];return{bx:idx,x:b.x+b.w/2,y:H-b.h,who:who}}
   gorillas=[s(li,0),s(ri,1)];
 }
 function spawnPU(){
-  powerUps=[];var cnt=Math.random()>.4?2:1,mid=Math.floor(buildings.length/2);
-  for(var i=0;i<cnt;i++){var bi=Math.floor(rand(Math.max(2,mid-3),Math.min(buildings.length-2,mid+3))),b=buildings[bi];
-    powerUps.push({x:b.x+b.w/2,y:H-b.h-25,type:PU_TYPES[Math.floor(rand(0,3))].id,collected:false})}
+  powerUps=[];var cnt=rng()>.4?2:1,mid=Math.floor(buildings.length/2);
+  for(var i=0;i<cnt;i++){var bi=Math.floor(rrand(Math.max(2,mid-3),Math.min(buildings.length-2,mid+3))),b=buildings[bi];
+    powerUps.push({x:b.x+b.w/2,y:H-b.h-25,type:PU_TYPES[Math.floor(rrand(0,3))].id,collected:false})}
 }
 
 function newRound(){
   round++;makeBld();makeStars();placeG();spawnPU();initW();
-  wind=Math.round(rand(-TH.wMax,TH.wMax));
+  wind=Math.round(rrand(-TH.wMax,TH.wMax));
   banana=null;explosions=[];particles=[];trail=[];smoke=[];cpuLastShot=null;
   cam.x=W/2;cam.y=H/2;cam.z=1;cam.tx=W/2;cam.ty=H/2;cam.tz=1;
-  turn=Math.random()>.5?0:1;updWind();elRnd.textContent=''+round;
+  turn=rng()>.5?0:1;updWind();elRnd.textContent=''+round;
   state='aim';updPU();
   if(gameMode==='infinite'){var h='';for(var i=0;i<lives;i++)h+='❤';elLives.textContent=h}
   var isHuman=turn===0||(gameMode==='2p');
