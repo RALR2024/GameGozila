@@ -315,7 +315,8 @@ var ACHS=[
   {id:'friendly',name:'Amistoso',icon:'🤝',desc:'Partida 2P completa'},
   {id:'coin_100',name:'Alcancía',icon:'🪙',desc:'Acumula 100 monedas'},
   {id:'rich',name:'Ricachón',icon:'💰',desc:'Acumula 500 monedas'},
-  {id:'beat_impossible',name:'Leyenda',icon:'👑',desc:'Vence en Imposible'}
+  {id:'beat_impossible',name:'Leyenda',icon:'👑',desc:'Vence en Imposible'},
+  {id:'collector',name:'Coleccionista',icon:'🎩',desc:'Compra 5 cosmeticos'}
 ];
 function rand(a,b){return a+Math.random()*(b-a)}
 function lerp(a,b,t){return a+(b-a)*t}
@@ -349,8 +350,8 @@ function renderShop(){
 }
 function openShop(){document.getElementById('startScreen').classList.add('hidden');document.getElementById('shopScreen').classList.remove('hidden');renderShop();}
 function closeShop(){document.getElementById('shopScreen').classList.add('hidden');document.getElementById('startScreen').classList.remove('hidden');updCoinsUI();}
-function shopBuy(id){}   /* completado en Task 6 */
-function shopEquip(cat,id){}  /* completado en Task 6 */
+function shopBuy(id){var r=buyCos(id);if(r==='ok'){if(SFX&&SFX.collect)SFX.collect();renderShop();}else if(r==='nofunds'){var b=document.getElementById('shopCoins');if(b){b.textContent='🪙 '+getCoins()+' — sin saldo';setTimeout(function(){b.textContent='🪙 '+getCoins()},1200);}}}
+function shopEquip(cat,id){if(equipCos(cat,id)){if(SFX&&SFX.ach)SFX.ach();renderShop();}}
 document.getElementById('shopBtn').addEventListener('click',openShop);
 document.getElementById('shopBackBtn').addEventListener('click',closeShop);
 (function(){var tabs=document.querySelectorAll('#shopTabs .shopTab');for(var i=0;i<tabs.length;i++)tabs[i].addEventListener('click',function(){var all=document.querySelectorAll('#shopTabs .shopTab');for(var j=0;j<all.length;j++)all[j].classList.remove('active');this.classList.add('active');shopTab=this.getAttribute('data-cat');renderShop();});})();
