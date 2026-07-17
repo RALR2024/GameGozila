@@ -396,7 +396,7 @@ var COSMETICS={
   ]
 };
 function cosDefaults(){return {owned:['fur_default','acc_none','trail_none','boom_default'],equip:{fur:'fur_default',acc:'acc_none',trail:'trail_none',boom:'boom_default'}}}
-function loadCos(){var c=LS('gcos');if(!c||!c.owned||!c.equip)return cosDefaults();var d=cosDefaults();for(var i=0;i<d.owned.length;i++)if(c.owned.indexOf(d.owned[i])<0)c.owned.push(d.owned[i]);var cats=['fur','acc','trail','boom'];for(var j=0;j<cats.length;j++){if(!c.equip[cats[j]]||c.owned.indexOf(c.equip[cats[j]])<0)c.equip[cats[j]]=d.equip[cats[j]]}return c}
+function loadCos(){var c=LS('gcos');if(!c||!Array.isArray(c.owned)||!c.equip)return cosDefaults();var d=cosDefaults();for(var i=0;i<d.owned.length;i++)if(c.owned.indexOf(d.owned[i])<0)c.owned.push(d.owned[i]);var cats=['fur','acc','trail','boom'];for(var j=0;j<cats.length;j++){if(!c.equip[cats[j]]||c.owned.indexOf(c.equip[cats[j]])<0)c.equip[cats[j]]=d.equip[cats[j]]}return c}
 function cosItem(cat,id){var arr=COSMETICS[cat]||[];for(var i=0;i<arr.length;i++)if(arr[i].id===id)return arr[i];return arr[0]}
 function equipped(cat){return cosItem(cat,loadCos().equip[cat])}
 function ownsCos(id){return loadCos().owned.indexOf(id)>=0}
