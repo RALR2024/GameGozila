@@ -123,6 +123,19 @@ input[type=range]::-moz-range-thumb{width:38px;height:38px;border-radius:50%;bac
 #cookieBanner .cbAccept:active{transform:translateY(2px);box-shadow:0 1px 0 #c99320}
 #cookieBanner .cbReject{color:#b9a6dd;background:rgba(255,255,255,0.1);border:1.5px solid rgba(255,255,255,0.2)}
 #cookieBanner .cbReject:active{background:rgba(255,255,255,0.15)}
+#shopScreen .shopTabs{display:flex;gap:6px;margin:10px 0;flex-wrap:wrap;justify-content:center}
+#shopScreen .shopTab{padding:6px 12px;border-radius:14px;border:1px solid #4a4a6a;background:#22223a;color:#ccd;font-size:13px;cursor:pointer}
+#shopScreen .shopTab.active{background:#7a4dff;color:#fff;border-color:#7a4dff}
+#shopGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;width:100%;max-width:520px;margin:0 auto;max-height:52vh;overflow-y:auto;padding:4px}
+.shopItem{background:#1c1c30;border:1px solid #3a3a5a;border-radius:12px;padding:10px;text-align:center;font-size:12px}
+.shopItem .swatch{width:100%;height:44px;border-radius:8px;margin-bottom:6px}
+.shopItem .nm{font-weight:700;color:#eef}
+.shopItem .pr{color:#ffd83b;margin:4px 0}
+.shopItem button{width:100%;padding:6px;border-radius:8px;border:none;font-weight:700;cursor:pointer;margin-top:4px}
+.shopItem .buyBtn{background:#2ecc71;color:#04240f}
+.shopItem .buyBtn:disabled{background:#444;color:#888;cursor:default}
+.shopItem .eqBtn{background:#7a4dff;color:#fff}
+.shopItem .eqBtn.on{background:#333;color:#9f9;cursor:default}
 </style>
 </head>
 <body>
@@ -173,6 +186,7 @@ input[type=range]::-moz-range-thumb{width:38px;height:38px;border-radius:50%;bac
   <div class="selRow" id="diffRow2"><button class="selBtn" data-diff="expert">Experto</button><button class="selBtn locked" data-diff="master">&#x1F512;</button><button class="selBtn locked" data-diff="impossible">&#x1F512;</button></div>
   <button class="btn" id="startBtn" style="margin-top:14px">JUGAR</button>
   <div class="stats" id="coinBal" style="font-weight:700">&#x1FA99; 0</div>
+  <button class="btn" id="shopBtn" style="background:#7a4dff;margin-top:8px">&#x1F6D2; TIENDA</button>
   <div class="stats" id="statsLine"></div>
   <div class="siteNav">
     <a href="acerca.html">Acerca de</a>
@@ -188,6 +202,19 @@ input[type=range]::-moz-range-thumb{width:38px;height:38px;border-radius:50%;bac
   <p id="endText"></p>
   <button class="btn" id="againBtn">JUGAR DE NUEVO</button>
   <div class="stats" id="endStats"></div>
+</div>
+<div class="overlay hidden" id="shopScreen">
+  <div class="emoji">&#x1F6D2;</div>
+  <h1>TIENDA</h1>
+  <div class="stats" id="shopCoins" style="font-weight:700">&#x1FA99; 0</div>
+  <div class="shopTabs" id="shopTabs">
+    <button class="shopTab active" data-cat="fur">Pelaje</button>
+    <button class="shopTab" data-cat="acc">Accesorios</button>
+    <button class="shopTab" data-cat="trail">Estelas</button>
+    <button class="shopTab" data-cat="boom">Explosiones</button>
+  </div>
+  <div id="shopGrid"></div>
+  <button class="btn" id="shopBackBtn" style="margin-top:14px">VOLVER</button>
 </div>
 </div>
 <div id="cookieBanner">
@@ -303,6 +330,30 @@ function loadStats(){return LS('gs4')||{w:0,l:0,g:0,hi:0,arenas:[]}}
 function saveStats(won,inf){var s=loadStats();s.g++;if(won)s.w++;else s.l++;if(inf&&round>s.hi)s.hi=round;if(s.arenas.indexOf(arena)<0)s.arenas.push(arena);LS('gs4',s);return s}
 function showStats(id){var s=loadStats(),el=document.getElementById(id);if(!el)return;var t='';if(s.g>0)t=s.w+'W/'+s.l+'L';if(s.hi>0)t+=' | Infinito: Ronda '+s.hi;el.textContent=t}
 function updCoinsUI(){var el=document.getElementById('coinBal');if(el)el.textContent='🪙 '+getCoins()}
+var shopTab='fur';
+function shopSwatch(cat,it){
+  if(cat==='fur')return '<div class="swatch" style="background:'+it.body+'"></div>';
+  if(cat==='trail'){var m={default:'#ffe65a',fire:'#ff5a1e',rainbow:'linear-gradient(90deg,#f00,#ff0,#0f0,#09f,#a0f)',ice:'#9be0ff',stars:'#fff08c'};return '<div class="swatch" style="background:'+(m[it.style]||'#ffe65a')+'"></div>';}
+  if(cat==='boom'){var b={default:'#ff8030',gold:'#ffcf40',rainbow:'linear-gradient(90deg,#7cf,#c6f,#f5a)',plasma:'#40e0ff'};return '<div class="swatch" style="background:'+(b[it.style]||'#ff8030')+'"></div>';}
+  var ic={acc_none:'&#x1F6AB;',acc_cap:'&#x1F9E2;',acc_glasses:'&#x1F576;',acc_band:'&#x1F3BD;',acc_crown:'&#x1F451;'};
+  return '<div class="swatch" style="display:flex;align-items:center;justify-content:center;font-size:28px;background:#101020">'+(ic[it.id]||'')+'</div>';
+}
+function renderShop(){
+  var el=document.getElementById('shopGrid');if(!el)return;var cos=loadCos();var eqId=cos.equip[shopTab];var arr=COSMETICS[shopTab];var html='';
+  for(var i=0;i<arr.length;i++){var it=arr[i];var owned=cos.owned.indexOf(it.id)>=0;var isEq=eqId===it.id;
+    html+='<div class="shopItem">'+shopSwatch(shopTab,it)+'<div class="nm">'+it.name+'</div>';
+    if(owned){html+='<button class="eqBtn'+(isEq?' on':'')+'" '+(isEq?'disabled':'onclick="shopEquip(\''+shopTab+'\',\''+it.id+'\')"')+'>'+(isEq?'EQUIPADO':'EQUIPAR')+'</button>';}
+    else{var canBuy=getCoins()>=it.cost;html+='<div class="pr">&#x1FA99; '+it.cost+'</div><button class="buyBtn" '+(canBuy?'onclick="shopBuy(\''+it.id+'\')"':'disabled')+'>COMPRAR</button>';}
+    html+='</div>';}
+  el.innerHTML=html;var sc=document.getElementById('shopCoins');if(sc)sc.textContent='🪙 '+getCoins();
+}
+function openShop(){document.getElementById('startScreen').classList.add('hidden');document.getElementById('shopScreen').classList.remove('hidden');renderShop();}
+function closeShop(){document.getElementById('shopScreen').classList.add('hidden');document.getElementById('startScreen').classList.remove('hidden');updCoinsUI();}
+function shopBuy(id){}   /* completado en Task 6 */
+function shopEquip(cat,id){}  /* completado en Task 6 */
+document.getElementById('shopBtn').addEventListener('click',openShop);
+document.getElementById('shopBackBtn').addEventListener('click',closeShop);
+(function(){var tabs=document.querySelectorAll('#shopTabs .shopTab');for(var i=0;i<tabs.length;i++)tabs[i].addEventListener('click',function(){var all=document.querySelectorAll('#shopTabs .shopTab');for(var j=0;j<all.length;j++)all[j].classList.remove('active');this.classList.add('active');shopTab=this.getAttribute('data-cat');renderShop();});})();
 function loadAch(){return LS('gach')||{}}
 function unlockAch(id){var a=loadAch();if(a[id])return;a[id]=1;LS('gach',a);var info;for(var i=0;i<ACHS.length;i++)if(ACHS[i].id===id)info=ACHS[i];if(!info)return;SFX.ach();document.getElementById('achIcon').textContent=info.icon;document.getElementById('achName').textContent=info.name;document.getElementById('achDesc').textContent=info.desc;var el=document.getElementById('achPopup');el.classList.add('show');setTimeout(function(){el.classList.remove('show')},2500)}
 
