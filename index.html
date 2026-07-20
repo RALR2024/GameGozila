@@ -916,6 +916,8 @@ function endGame(){
     saveDaily({date:todayStr(),done:already||passed,obj:obj.id,tries:((dd&&dd.date===todayStr()&&dd.tries)||0)+1});
     if(passed&&!already){addCoins(50);bumpStreak();unlockAch('daily_first');
       document.getElementById('endText').textContent='Reto diario completado! +50 🪙';}
+    else if(passed&&already){document.getElementById('endText').textContent='Reto ya completado hoy. Buen tiro!';}
+    else if(won&&!passed){document.getElementById('endText').textContent='Ganaste, pero no cumpliste el reto: '+obj.desc;}
     dailyMode=false;dailyRng=null;}
 }
 
