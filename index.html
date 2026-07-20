@@ -136,6 +136,12 @@ input[type=range]::-moz-range-thumb{width:38px;height:38px;border-radius:50%;bac
 .shopItem .buyBtn:disabled{background:#444;color:#888;cursor:default}
 .shopItem .eqBtn{background:#7a4dff;color:#fff}
 .shopItem .eqBtn.on{background:#333;color:#9f9;cursor:default}
+#dailyScreen .dailyObj{background:#1c1c30;border:1px solid #7a4dff;border-radius:12px;padding:16px;max-width:420px;margin:10px auto;color:#eef}
+#dailyScreen .dailyObj .lbl{color:#a98cff;font-size:12px;text-transform:uppercase;letter-spacing:1px}
+#dailyScreen .dailyObj .txt{font-size:18px;font-weight:700;margin:6px 0}
+#dailyScreen .dailyState{margin:8px 0;font-weight:700}
+#dailyScreen .dailyState.done{color:#2ecc71}
+#dailyScreen .streakLine{color:#ffd83b;font-weight:700;margin:8px 0}
 </style>
 </head>
 <body>
@@ -187,6 +193,7 @@ input[type=range]::-moz-range-thumb{width:38px;height:38px;border-radius:50%;bac
   <button class="btn" id="startBtn" style="margin-top:14px">JUGAR</button>
   <div class="stats" id="coinBal" style="font-weight:700">&#x1FA99; 0</div>
   <button class="btn" id="shopBtn" style="background:#7a4dff;margin-top:8px">&#x1F6D2; TIENDA</button>
+  <button class="btn" id="dailyBtn" style="background:#e67e22;margin-top:8px">&#x1F4C5; RETO DIARIO</button>
   <div class="stats" id="statsLine"></div>
   <div class="siteNav">
     <a href="acerca.html">Acerca de</a>
@@ -215,6 +222,18 @@ input[type=range]::-moz-range-thumb{width:38px;height:38px;border-radius:50%;bac
   </div>
   <div id="shopGrid"></div>
   <button class="btn" id="shopBackBtn" style="margin-top:14px">VOLVER</button>
+</div>
+<div class="overlay hidden" id="dailyScreen">
+  <div class="emoji">&#x1F4C5;</div>
+  <h1>RETO DIARIO</h1>
+  <div class="dailyObj">
+    <div class="lbl">Objetivo de hoy</div>
+    <div class="txt" id="dailyObjTxt">—</div>
+  </div>
+  <div class="dailyState" id="dailyState">—</div>
+  <div class="streakLine" id="dailyStreak">&#x1F525; Racha: 0</div>
+  <button class="btn" id="dailyPlayBtn" style="margin-top:10px">JUGAR RETO</button>
+  <button class="btn" id="dailyBackBtn" style="margin-top:8px;background:#444">VOLVER</button>
 </div>
 </div>
 <div id="cookieBanner">
@@ -316,7 +335,9 @@ var ACHS=[
   {id:'coin_100',name:'Alcancía',icon:'🪙',desc:'Acumula 100 monedas'},
   {id:'rich',name:'Ricachón',icon:'💰',desc:'Acumula 500 monedas'},
   {id:'beat_impossible',name:'Leyenda',icon:'👑',desc:'Vence en Imposible'},
-  {id:'collector',name:'Coleccionista',icon:'🎩',desc:'Compra 5 cosmeticos'}
+  {id:'collector',name:'Coleccionista',icon:'🎩',desc:'Compra 5 cosmeticos'},
+  {id:'daily_first',name:'Primer Reto',icon:'📅',desc:'Completa tu primer reto diario'},
+  {id:'devotee',name:'Devoto',icon:'🔥',desc:'Racha diaria de 7 dias'}
 ];
 function rand(a,b){return a+Math.random()*(b-a)}
 function lerp(a,b,t){return a+(b-a)*t}
@@ -331,6 +352,17 @@ function loadStats(){return LS('gs4')||{w:0,l:0,g:0,hi:0,arenas:[]}}
 function saveStats(won,inf){var s=loadStats();s.g++;if(won)s.w++;else s.l++;if(inf&&round>s.hi)s.hi=round;if(s.arenas.indexOf(arena)<0)s.arenas.push(arena);LS('gs4',s);return s}
 function showStats(id){var s=loadStats(),el=document.getElementById(id);if(!el)return;var t='';if(s.g>0)t=s.w+'W/'+s.l+'L';if(s.hi>0)t+=' | Infinito: Ronda '+s.hi;el.textContent=t}
 function updCoinsUI(){var el=document.getElementById('coinBal');if(el)el.textContent='🪙 '+getCoins()}
+function renderDaily(){var o=dailyObj(),dd=loadDaily(),st=loadStreak();
+  document.getElementById('dailyObjTxt').textContent=o.desc;
+  var done=!!(dd&&dd.done&&dd.date===todayStr());
+  var se=document.getElementById('dailyState');se.textContent=done?'✅ Completado hoy':'Pendiente';se.className='dailyState'+(done?' done':'');
+  document.getElementById('dailyStreak').textContent='🔥 Racha: '+(st.count||0);
+  var pb=document.getElementById('dailyPlayBtn');pb.textContent=done?'JUGAR DE NUEVO':'JUGAR RETO';}
+function openDaily(){document.getElementById('startScreen').classList.add('hidden');document.getElementById('dailyScreen').classList.remove('hidden');renderDaily();}
+function closeDaily(){document.getElementById('dailyScreen').classList.add('hidden');document.getElementById('startScreen').classList.remove('hidden');}
+document.getElementById('dailyBtn').addEventListener('click',openDaily);
+document.getElementById('dailyBackBtn').addEventListener('click',closeDaily);
+document.getElementById('dailyPlayBtn').addEventListener('click',startDaily);
 var shopTab='fur';
 function shopSwatch(cat,it){
   if(cat==='fur')return '<div class="swatch" style="background:'+it.body+'"></div>';
