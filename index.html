@@ -718,6 +718,7 @@ function fireFromUI(){
   if(gameMode==='cpu'&&turn!==0)return;
   if(gameMode==='infinite'&&turn!==0)return;
   SFX.init();SFX.resume();SFX.startM();
+  var ab=document.querySelector('.weaponBtn.active');if(ab)weapon=ab.getAttribute('data-w');
   var g=gorillas[gi],s=g._s||30,angR=curA()*Math.PI/180,speed=4+(curP()/100)*16;
   var dir=gi===0?1:-1;
   fireBan(g.x,g.y-s,dir*Math.cos(angR)*speed,-Math.sin(angR)*speed,gi);
