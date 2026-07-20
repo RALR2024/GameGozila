@@ -136,6 +136,12 @@ input[type=range]::-moz-range-thumb{width:38px;height:38px;border-radius:50%;bac
 .shopItem .buyBtn:disabled{background:#444;color:#888;cursor:default}
 .shopItem .eqBtn{background:#7a4dff;color:#fff}
 .shopItem .eqBtn.on{background:#333;color:#9f9;cursor:default}
+#dailyScreen .dailyObj{background:#1c1c30;border:1px solid #7a4dff;border-radius:12px;padding:16px;max-width:420px;margin:10px auto;color:#eef}
+#dailyScreen .dailyObj .lbl{color:#a98cff;font-size:12px;text-transform:uppercase;letter-spacing:1px}
+#dailyScreen .dailyObj .txt{font-size:18px;font-weight:700;margin:6px 0}
+#dailyScreen .dailyState{margin:8px 0;font-weight:700}
+#dailyScreen .dailyState.done{color:#2ecc71}
+#dailyScreen .streakLine{color:#ffd83b;font-weight:700;margin:8px 0}
 </style>
 </head>
 <body>
@@ -187,6 +193,7 @@ input[type=range]::-moz-range-thumb{width:38px;height:38px;border-radius:50%;bac
   <button class="btn" id="startBtn" style="margin-top:14px">JUGAR</button>
   <div class="stats" id="coinBal" style="font-weight:700">&#x1FA99; 0</div>
   <button class="btn" id="shopBtn" style="background:#7a4dff;margin-top:8px">&#x1F6D2; TIENDA</button>
+  <button class="btn" id="dailyBtn" style="background:#e67e22;margin-top:8px">&#x1F4C5; RETO DIARIO</button>
   <div class="stats" id="statsLine"></div>
   <div class="siteNav">
     <a href="acerca.html">Acerca de</a>
@@ -215,6 +222,18 @@ input[type=range]::-moz-range-thumb{width:38px;height:38px;border-radius:50%;bac
   </div>
   <div id="shopGrid"></div>
   <button class="btn" id="shopBackBtn" style="margin-top:14px">VOLVER</button>
+</div>
+<div class="overlay hidden" id="dailyScreen">
+  <div class="emoji">&#x1F4C5;</div>
+  <h1>RETO DIARIO</h1>
+  <div class="dailyObj">
+    <div class="lbl">Objetivo de hoy</div>
+    <div class="txt" id="dailyObjTxt">—</div>
+  </div>
+  <div class="dailyState" id="dailyState">—</div>
+  <div class="streakLine" id="dailyStreak">&#x1F525; Racha: 0</div>
+  <button class="btn" id="dailyPlayBtn" style="margin-top:10px">JUGAR RETO</button>
+  <button class="btn" id="dailyBackBtn" style="margin-top:8px;background:#444">VOLVER</button>
 </div>
 </div>
 <div id="cookieBanner">
@@ -316,7 +335,9 @@ var ACHS=[
   {id:'coin_100',name:'Alcancía',icon:'🪙',desc:'Acumula 100 monedas'},
   {id:'rich',name:'Ricachón',icon:'💰',desc:'Acumula 500 monedas'},
   {id:'beat_impossible',name:'Leyenda',icon:'👑',desc:'Vence en Imposible'},
-  {id:'collector',name:'Coleccionista',icon:'🎩',desc:'Compra 5 cosmeticos'}
+  {id:'collector',name:'Coleccionista',icon:'🎩',desc:'Compra 5 cosmeticos'},
+  {id:'daily_first',name:'Primer Reto',icon:'📅',desc:'Completa tu primer reto diario'},
+  {id:'devotee',name:'Devoto',icon:'🔥',desc:'Racha diaria de 7 dias'}
 ];
 function rand(a,b){return a+Math.random()*(b-a)}
 function lerp(a,b,t){return a+(b-a)*t}
@@ -331,6 +352,17 @@ function loadStats(){return LS('gs4')||{w:0,l:0,g:0,hi:0,arenas:[]}}
 function saveStats(won,inf){var s=loadStats();s.g++;if(won)s.w++;else s.l++;if(inf&&round>s.hi)s.hi=round;if(s.arenas.indexOf(arena)<0)s.arenas.push(arena);LS('gs4',s);return s}
 function showStats(id){var s=loadStats(),el=document.getElementById(id);if(!el)return;var t='';if(s.g>0)t=s.w+'W/'+s.l+'L';if(s.hi>0)t+=' | Infinito: Ronda '+s.hi;el.textContent=t}
 function updCoinsUI(){var el=document.getElementById('coinBal');if(el)el.textContent='🪙 '+getCoins()}
+function renderDaily(){var o=dailyObj(),dd=loadDaily(),st=loadStreak();
+  document.getElementById('dailyObjTxt').textContent=o.desc;
+  var done=!!(dd&&dd.done&&dd.date===todayStr());
+  var se=document.getElementById('dailyState');se.textContent=done?'✅ Completado hoy':'Pendiente';se.className='dailyState'+(done?' done':'');
+  document.getElementById('dailyStreak').textContent='🔥 Racha: '+(st.count||0);
+  var pb=document.getElementById('dailyPlayBtn');pb.textContent=done?'JUGAR DE NUEVO':'JUGAR RETO';}
+function openDaily(){document.getElementById('startScreen').classList.add('hidden');document.getElementById('dailyScreen').classList.remove('hidden');renderDaily();}
+function closeDaily(){document.getElementById('dailyScreen').classList.add('hidden');document.getElementById('startScreen').classList.remove('hidden');}
+document.getElementById('dailyBtn').addEventListener('click',openDaily);
+document.getElementById('dailyBackBtn').addEventListener('click',closeDaily);
+document.getElementById('dailyPlayBtn').addEventListener('click',startDaily);
 var shopTab='fur';
 function shopSwatch(cat,it){
   if(cat==='fur')return '<div class="swatch" style="background:'+it.body+'"></div>';
@@ -404,6 +436,33 @@ function cosCatOf(id){var cats=['fur','acc','trail','boom'];for(var i=0;i<cats.l
 function buyCos(id){var cat=cosCatOf(id);if(!cat)return 'bad';if(ownsCos(id))return 'owned';var it=cosItem(cat,id);if(!spendCoins(it.cost))return 'nofunds';var c=loadCos();c.owned.push(id);LS('gcos',c);var paid=0;for(var i=0;i<c.owned.length;i++)if((cosItem(cosCatOf(c.owned[i]),c.owned[i])||{}).cost>0)paid++;if(paid>=5)unlockAch('collector');if(typeof updCoinsUI==='function')updCoinsUI();return 'ok'}
 function equipCos(cat,id){if(!ownsCos(id))return false;if(cosCatOf(id)!==cat)return false;var c=loadCos();c.equip[cat]=id;LS('gcos',c);return true}
 
+// ---- Seeded RNG + Daily ----
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function hashStr(s){var h=2166136261;for(var i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
+var dailyRng=null;
+function rng(){return dailyRng?dailyRng():Math.random()}
+function rrand(a,b){return a+rng()*(b-a)}
+function pad2(n){return(n<10?'0':'')+n}
+function fmtDate(d){return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate())}
+function todayStr(){return fmtDate(new Date())}
+function yesterdayStr(){var d=new Date();d.setDate(d.getDate()-1);return fmtDate(d)}
+function dayOfYear(){var d=new Date();var start=new Date(d.getFullYear(),0,0);return Math.floor((d-start)/86400000)}
+function loadDaily(){return LS('gdaily')}
+function saveDaily(o){LS('gdaily',o)}
+function loadStreak(){var s=LS('gstreak');return(s&&typeof s.count==='number')?s:{last:'',count:0}}
+var DAILY_OBJS=[
+  {id:'only_boomerang',desc:'Gana usando solo boomerang',test:function(){return !!dWeapons.boomerang&&!dWeapons.normal&&!dWeapons.cluster}},
+  {id:'no_damage',desc:'Gana sin recibir ningun golpe',test:function(){return pDmgTaken===0}},
+  {id:'three_shots',desc:'Gana en 3 tiros o menos',test:function(){return pShots<=3}},
+  {id:'only_cluster',desc:'Gana usando solo racimo',test:function(){return !!dWeapons.cluster&&!dWeapons.normal&&!dWeapons.boomerang}},
+  {id:'only_normal',desc:'Gana usando solo banana normal',test:function(){return !!dWeapons.normal&&!dWeapons.cluster&&!dWeapons.boomerang}},
+  {id:'streak3',desc:'Gana con una racha de 3 aciertos',test:function(){return streakMax>=3}},
+  {id:'collect_pu',desc:'Gana recogiendo un power-up',test:function(){return dPUCollected}}
+];
+function dailyObj(){return DAILY_OBJS[dayOfYear()%DAILY_OBJS.length]}
+function bumpStreak(){var s=loadStreak(),today=todayStr();if(s.last===today)return;s.count=(s.last===yesterdayStr())?s.count+1:1;s.last=today;LS('gstreak',s);if(s.count>=7)unlockAch('devotee')}
+function startDaily(){dailyRng=mulberry32(hashStr(todayStr()));dailyMode=true;arena=['neon','jungle','space'][Math.floor(rng()*3)];difficulty=['normal','hard','expert'][Math.floor(rng()*3)];gameMode='cpu';if(typeof closeDaily==='function')closeDaily();startGame()}
+
 // ---- Canvas ----
 var cv=document.getElementById('game'),ctx=cv.getContext('2d'),W,H,DPR;
 function resize(){DPR=Math.min(window.devicePixelRatio||1,2);W=window.innerWidth;H=window.innerHeight;cv.width=W*DPR;cv.height=H*DPR;cv.style.width=W+'px';cv.style.height=H+'px';ctx.setTransform(DPR,0,0,DPR,0,0)}
@@ -422,6 +481,7 @@ var clouds=[];
 var smoke=[];
 var cpuLastShot=null;
 var gameMode='cpu',arena='neon',difficulty='normal',lives=3;
+var pShots=0,dWeapons={},dPUCollected=false,streakMax=0,dailyMode=false;
 var flashEl=document.getElementById('screenFlash');
 var TH;
 
@@ -473,28 +533,28 @@ function makeStars(){stars=[];var n=Math.floor(W*H/(arena==='space'?4000:9000));
   for(var i=0;i<nc;i++)clouds.push({x:rand(0,W),y:rand(H*.08,H*.35),w:rand(60,140),h:rand(20,40),sp:rand(.08,.2),op:rand(.03,.06)*opMul})}
 function makeBld(){
   buildings=[];var n=Math.max(8,Math.min(14,Math.round(W/70))),bw=W/n;
-  for(var i=0;i<n;i++){var h=rand(H*.16,H*.55),c=TH.bldC[i%TH.bldC.length],ne=TH.neon[Math.floor(rand(0,TH.neon.length))];
+  for(var i=0;i<n;i++){var h=rrand(H*.16,H*.55),c=TH.bldC[i%TH.bldC.length],ne=TH.neon[Math.floor(rrand(0,TH.neon.length))];
     var cols=Math.floor((bw-8)/14),rows=Math.floor(h/20);
     var winOn=[];for(var wi=0;wi<cols*rows;wi++)winOn.push(Math.random()<.45);
     buildings.push({x:i*bw,w:bw,h:h,c1:c[0],c2:c[1],neon:ne,ant:Math.random()>.6,cols:cols,rows:rows,winOn:winOn,craters:[]})}
 }
 function placeG(){
-  var li=Math.floor(rand(0,Math.min(3,buildings.length))),ri=Math.floor(rand(Math.max(buildings.length-3,0),buildings.length));
+  var li=Math.floor(rrand(0,Math.min(3,buildings.length))),ri=Math.floor(rrand(Math.max(buildings.length-3,0),buildings.length));
   function s(idx,who){var b=buildings[idx];return{bx:idx,x:b.x+b.w/2,y:H-b.h,who:who}}
   gorillas=[s(li,0),s(ri,1)];
 }
 function spawnPU(){
-  powerUps=[];var cnt=Math.random()>.4?2:1,mid=Math.floor(buildings.length/2);
-  for(var i=0;i<cnt;i++){var bi=Math.floor(rand(Math.max(2,mid-3),Math.min(buildings.length-2,mid+3))),b=buildings[bi];
-    powerUps.push({x:b.x+b.w/2,y:H-b.h-25,type:PU_TYPES[Math.floor(rand(0,3))].id,collected:false})}
+  powerUps=[];var cnt=rng()>.4?2:1,mid=Math.floor(buildings.length/2);
+  for(var i=0;i<cnt;i++){var bi=Math.floor(rrand(Math.max(2,mid-3),Math.min(buildings.length-2,mid+3))),b=buildings[bi];
+    powerUps.push({x:b.x+b.w/2,y:H-b.h-25,type:PU_TYPES[Math.floor(rrand(0,3))].id,collected:false})}
 }
 
 function newRound(){
   round++;makeBld();makeStars();placeG();spawnPU();initW();
-  wind=Math.round(rand(-TH.wMax,TH.wMax));
+  wind=Math.round(rrand(-TH.wMax,TH.wMax));
   banana=null;explosions=[];particles=[];trail=[];smoke=[];cpuLastShot=null;
   cam.x=W/2;cam.y=H/2;cam.z=1;cam.tx=W/2;cam.ty=H/2;cam.tz=1;
-  turn=Math.random()>.5?0:1;updWind();elRnd.textContent=''+round;
+  turn=rng()>.5?0:1;updWind();elRnd.textContent=''+round;
   state='aim';updPU();
   if(gameMode==='infinite'){var h='';for(var i=0;i<lives;i++)h+='❤';elLives.textContent=h}
   var isHuman=turn===0||(gameMode==='2p');
@@ -658,6 +718,7 @@ function fireFromUI(){
   if(gameMode==='cpu'&&turn!==0)return;
   if(gameMode==='infinite'&&turn!==0)return;
   SFX.init();SFX.resume();SFX.startM();
+  var ab=document.querySelector('.weaponBtn.active');if(ab)weapon=ab.getAttribute('data-w');
   var g=gorillas[gi],s=g._s||30,angR=curA()*Math.PI/180,speed=4+(curP()/100)*16;
   var dir=gi===0?1:-1;
   fireBan(g.x,g.y-s,dir*Math.cos(angR)*speed,-Math.sin(angR)*speed,gi);
@@ -686,6 +747,7 @@ cv.addEventListener('mouseup',function(){if(!touchAim)return;touchAim=null;fireF
 function fireBan(x,y,vx,vy,from){
   var pu=from===0?playerPU:cpuPU;
   banana={x:x,y:y,vx:vx,vy:vy,rot:0,age:0,from:from,mega:pu==='mega',noW:pu==='calm',wt:weapon};
+  if(from===0){pShots++;dWeapons[weapon]=true}
   gorillas[from].throwAnim=Date.now();
   if(from===0)playerPU=null;else cpuPU=null;updPU();state='fly';SFX.throw_sound();vibrate(30);
 }
@@ -725,7 +787,7 @@ function stepBan(){
   banana.x+=banana.vx;banana.y+=banana.vy;banana.rot+=.3;banana.age++;
   trail.push({x:banana.x,y:banana.y});if(trail.length>12)trail.shift();
   if(banana.x<-40||banana.x>W+40||banana.y>H+60){missShot();return}
-  for(var pi=0;pi<powerUps.length;pi++){var pu=powerUps[pi];if(pu.collected)continue;if(Math.hypot(banana.x-pu.x,banana.y-pu.y)<35){pu.collected=true;if(banana.from===0)playerPU=pu.type;else cpuPU=pu.type;spawnP(pu.x,pu.y,15,false);SFX.collect();updPU()}}
+  for(var pi=0;pi<powerUps.length;pi++){var pu=powerUps[pi];if(pu.collected)continue;if(Math.hypot(banana.x-pu.x,banana.y-pu.y)<35){pu.collected=true;if(banana.from===0){playerPU=pu.type;dPUCollected=true}else cpuPU=pu.type;spawnP(pu.x,pu.y,15,false);SFX.collect();updPU()}}
   for(var i=0;i<gorillas.length;i++){var go=gorillas[i],s=go._s||30;if(i===banana.from&&banana.age<8)continue;if(Math.hypot(banana.x-go.x,banana.y-(go.y-s))<s*.95){hitG(i);return}}
   for(var bi=0;bi<buildings.length;bi++){var b=buildings[bi];if(banana.x>b.x&&banana.x<b.x+b.w&&banana.y>H-b.h){hitBld(banana.x,banana.y,b);return}}
 }
@@ -747,7 +809,7 @@ function hitG(idx){
   gorillas[idx].expr='hurt';setTimeout(function(){gorillas[idx].expr='neutral'},1000);
   gorillas[1-idx].expr='happy';setTimeout(function(){gorillas[1-idx].expr='neutral'},1500);
   if(banana&&banana.wt==='boomerang')unlockAch('boom_hit');
-  if(idx===1){pScore++;elPS.textContent=pScore;streak++;if(streak>=2){showStr(streak);SFX.streak()}if(streak>=3)unlockAch('streak3')}
+  if(idx===1){pScore++;elPS.textContent=pScore;streak++;if(streak>streakMax)streakMax=streak;if(streak>=2){showStr(streak);SFX.streak()}if(streak>=3)unlockAch('streak3')}
   else{cScore++;elCS.textContent=cScore;streak=0;if(gameMode==='infinite'){lives--;var h='';for(var i=0;i<lives;i++)h+='❤';elLives.textContent=h}pDmgTaken++}
   vibrate([50,30,100]);flashEl.style.opacity='.5';setTimeout(function(){flashEl.style.opacity='0'},80);
   var wait=function(){if(paused){setTimeout(wait,400);return}
@@ -802,12 +864,13 @@ bindSel('diffRow2',function(b){if(b.classList.contains('locked'))return;var d1bt
 
 function pauseG(){if(state==='start'||state==='end')return;paused=true;document.getElementById('pauseScreen').classList.remove('hidden');elCtrl.classList.add('disabled')}
 function resumeG(){paused=false;document.getElementById('pauseScreen').classList.add('hidden');var isH=(gameMode==='2p')||(turn===0);if(state==='aim'&&isH)elCtrl.classList.remove('disabled')}
-function goHome(){paused=false;document.getElementById('pauseScreen').classList.add('hidden');document.getElementById('endScreen').classList.add('hidden');document.getElementById('startScreen').classList.remove('hidden');state='start';SFX.stopM();layout();showStats('statsLine')}
+function goHome(){dailyMode=false;dailyRng=null;paused=false;document.getElementById('pauseScreen').classList.add('hidden');document.getElementById('endScreen').classList.add('hidden');document.getElementById('startScreen').classList.remove('hidden');state='start';SFX.stopM();layout();showStats('statsLine')}
 function startGame(){
   SFX.init();SFX.resume();SFX.startM();TH=THEMES[arena];
   document.getElementById('startScreen').classList.add('hidden');document.getElementById('endScreen').classList.add('hidden');
   document.getElementById('pauseScreen').classList.add('hidden');
   paused=false;pScore=0;cScore=0;round=0;streak=0;pDmgTaken=0;lives=3;
+  pShots=0;dWeapons={};dPUCollected=false;streakMax=0;
   playerPU=null;cpuPU=null;confetti=[];weapon='normal';
   elPS.textContent='0';elCS.textContent='0';
   elLP.textContent=gameMode==='2p'?'P1':'Tu';elLC.textContent=gameMode==='2p'?'P2':'CPU';
@@ -848,6 +911,14 @@ function endGame(){
   if(gameMode==='infinite'){earned=Math.floor(round/5)*5;}
   else if(won){earned=Math.round(10*diffMult(difficulty));}
   if(earned>0)addCoins(earned);
+  if(dailyMode){var dd=loadDaily(),obj=dailyObj(),already=!!(dd&&dd.done&&dd.date===todayStr());
+    var passed=won&&obj.test();
+    saveDaily({date:todayStr(),done:already||passed,obj:obj.id,tries:((dd&&dd.date===todayStr()&&dd.tries)||0)+1});
+    if(passed&&!already){addCoins(50);bumpStreak();unlockAch('daily_first');
+      document.getElementById('endText').textContent='Reto diario completado! +50 🪙';}
+    else if(passed&&already){document.getElementById('endText').textContent='Reto ya completado hoy. Buen tiro!';}
+    else if(won&&!passed){document.getElementById('endText').textContent='Ganaste, pero no cumpliste el reto: '+obj.desc;}
+    dailyMode=false;dailyRng=null;}
 }
 
 updDiffUI();layout();showStats('statsLine');updCoinsUI();mainLoop();
