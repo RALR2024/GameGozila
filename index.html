@@ -436,6 +436,22 @@ function cosCatOf(id){var cats=['fur','acc','trail','boom'];for(var i=0;i<cats.l
 function buyCos(id){var cat=cosCatOf(id);if(!cat)return 'bad';if(ownsCos(id))return 'owned';var it=cosItem(cat,id);if(!spendCoins(it.cost))return 'nofunds';var c=loadCos();c.owned.push(id);LS('gcos',c);var paid=0;for(var i=0;i<c.owned.length;i++)if((cosItem(cosCatOf(c.owned[i]),c.owned[i])||{}).cost>0)paid++;if(paid>=5)unlockAch('collector');if(typeof updCoinsUI==='function')updCoinsUI();return 'ok'}
 function equipCos(cat,id){if(!ownsCos(id))return false;if(cosCatOf(id)!==cat)return false;var c=loadCos();c.equip[cat]=id;LS('gcos',c);return true}
 
+// ---- Weapons ----
+var WEAPONS=[
+  {id:'normal',name:'Platano',icon:'🍌',cost:0},
+  {id:'cluster',name:'Racimo',icon:'💣',cost:0},
+  {id:'boomerang',name:'Boomerang',icon:'🪃',cost:0},
+  {id:'napalm',name:'Napalm',icon:'🔥',cost:150},
+  {id:'piercing',name:'Perforadora',icon:'🛠',cost:150},
+  {id:'homing',name:'Teledirigida',icon:'🛰',cost:250},
+  {id:'mirv',name:'MIRV',icon:'☄',cost:300}
+];
+function weaponItem(id){for(var i=0;i<WEAPONS.length;i++)if(WEAPONS[i].id===id)return WEAPONS[i];return WEAPONS[0]}
+function weaponDefaults(){return ['normal','cluster','boomerang']}
+function loadWeapons(){var w=LS('gweapons');if(!Array.isArray(w))return weaponDefaults();var d=weaponDefaults();for(var i=0;i<d.length;i++)if(w.indexOf(d[i])<0)w.push(d[i]);return w}
+function ownsWeapon(id){return loadWeapons().indexOf(id)>=0}
+function buyWeapon(id){var it=weaponItem(id);if(!it||it.cost<=0)return 'bad';if(ownsWeapon(id))return 'owned';if(!spendCoins(it.cost))return 'nofunds';var w=loadWeapons();w.push(id);LS('gweapons',w);if(loadWeapons().length>=WEAPONS.length)unlockAch('arsenal');if(typeof updCoinsUI==='function')updCoinsUI();return 'ok'}
+
 // ---- Seeded RNG + Daily ----
 function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 function hashStr(s){var h=2166136261;for(var i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
