@@ -60,7 +60,9 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:38px;heigh
 input[type=range]::-moz-range-thumb{width:38px;height:38px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#ffd86b);cursor:pointer;border:3px solid #c99320}
 #angleSlider::-webkit-slider-thumb{background:radial-gradient(circle at 35% 30%,#fff,#7fffd4);border-color:#2a9d8f}
 #angleSlider::-moz-range-thumb{background:radial-gradient(circle at 35% 30%,#fff,#7fffd4);border-color:#2a9d8f}
-.weaponRow{display:flex;gap:8px;justify-content:center}
+.weaponRow{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;max-width:340px;margin:0 auto}
+.weaponBtn.locked{opacity:.45;cursor:default;position:relative}
+.weaponBtn.locked::after{content:'🔒';position:absolute;top:1px;right:3px;font-size:10px}
 .weaponBtn{width:60px;height:44px;border-radius:12px;background:rgba(255,255,255,0.08);border:2px solid rgba(255,255,255,0.15);color:#fff;font-size:22px;cursor:pointer;transition:all .12s;display:flex;align-items:center;justify-content:center}
 .weaponBtn.active{background:rgba(255,216,107,0.2);border-color:#ffd86b;box-shadow:0 0 10px rgba(255,216,107,0.3)}
 .weaponBtn .wlbl{font-size:8px;color:#aaa;position:absolute;bottom:2px}
@@ -177,7 +179,7 @@ input[type=range]::-moz-range-thumb{width:38px;height:38px;border-radius:50%;bac
 <div id="controls">
   <div class="ctrlRow"><span class="name">Angulo</span><input type="range" id="angleSlider" min="5" max="85" value="45"><span class="num" id="angleNum">45</span></div>
   <div class="ctrlRow"><span class="name">Fuerza</span><input type="range" id="powerSlider" min="10" max="100" value="55"><span class="num" id="powerNum">55</span></div>
-  <div class="weaponRow"><button class="weaponBtn active" data-w="normal">&#x1F34C;</button><button class="weaponBtn" data-w="cluster">&#x1F4A3;</button><button class="weaponBtn" data-w="boomerang">&#x1FA83;</button></div>
+  <div class="weaponRow" id="weaponRow"><button class="weaponBtn active" data-w="normal">&#x1F34C;</button><button class="weaponBtn" data-w="cluster">&#x1F4A3;</button><button class="weaponBtn" data-w="boomerang">&#x1FA83;</button><button class="weaponBtn" data-w="napalm">&#x1F525;</button><button class="weaponBtn" data-w="piercing">&#x1F6E0;</button><button class="weaponBtn" data-w="homing">&#x1F6F0;</button><button class="weaponBtn" data-w="mirv">&#x2604;</button></div>
   <button id="fireBtn">LANZAR</button>
 </div>
 <div class="overlay" id="startScreen">
@@ -726,7 +728,9 @@ function updN(){aNum.textContent=curA()+'°';pNum.textContent=''+curP()}
 aSlider.addEventListener('input',updN);pSlider.addEventListener('input',updN);updN();
 
 var wBtns=document.querySelectorAll('.weaponBtn');
-for(var i=0;i<wBtns.length;i++)wBtns[i].addEventListener('click',function(){for(var j=0;j<wBtns.length;j++)wBtns[j].classList.remove('active');this.classList.add('active');weapon=this.getAttribute('data-w')});
+function renderWeaponRow(){for(var i=0;i<wBtns.length;i++){var id=wBtns[i].getAttribute('data-w'),own=ownsWeapon(id);if(own)wBtns[i].classList.remove('locked');else wBtns[i].classList.add('locked')}
+  var act=document.querySelector('.weaponBtn.active');if(!act||!ownsWeapon(act.getAttribute('data-w'))){for(var k=0;k<wBtns.length;k++)wBtns[k].classList.remove('active');var nb=document.querySelector('.weaponBtn[data-w="normal"]');if(nb)nb.classList.add('active');weapon='normal'}}
+for(var i=0;i<wBtns.length;i++)wBtns[i].addEventListener('click',function(){var id=this.getAttribute('data-w');if(!ownsWeapon(id))return;for(var j=0;j<wBtns.length;j++)wBtns[j].classList.remove('active');this.classList.add('active');weapon=id});
 
 function fireFromUI(){
   if(state!=='aim')return;
@@ -888,6 +892,7 @@ function startGame(){
   paused=false;pScore=0;cScore=0;round=0;streak=0;pDmgTaken=0;lives=3;
   pShots=0;dWeapons={};dPUCollected=false;streakMax=0;
   playerPU=null;cpuPU=null;confetti=[];weapon='normal';
+  if(typeof renderWeaponRow==='function')renderWeaponRow();
   elPS.textContent='0';elCS.textContent='0';
   elLP.textContent=gameMode==='2p'?'P1':'Tu';elLC.textContent=gameMode==='2p'?'P2':'CPU';
   if(gameMode==='infinite'){elLives.classList.remove('hidden');elLives.textContent='❤❤❤'}else elLives.classList.add('hidden');
