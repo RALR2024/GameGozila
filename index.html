@@ -767,6 +767,7 @@ cv.addEventListener('mouseup',function(){if(!touchAim)return;touchAim=null;fireF
 function fireBan(x,y,vx,vy,from){
   var pu=from===0?playerPU:cpuPU;
   banana={x:x,y:y,vx:vx,vy:vy,rot:0,age:0,from:from,mega:pu==='mega',noW:pu==='calm',wt:weapon};
+  if(weapon==='piercing'){banana.pierce=2;banana._lp=-1}
   if(from===0){pShots++;dWeapons[weapon]=true}
   gorillas[from].throwAnim=Date.now();
   if(from===0)playerPU=null;else cpuPU=null;updPU();state='fly';SFX.throw_sound();vibrate(30);
@@ -804,12 +805,15 @@ function stepBan(){
   if(!banana.noW)banana.vx+=wind*.02;
   banana.vy+=TH.grav;
   if(banana.wt==='boomerang'&&banana.age>15)banana.vx+=Math.sin(banana.age*.06)*.4;
+  if(banana.wt==='homing'&&banana.age>8){var tg=gorillas[1-banana.from];if(tg){var htx=tg.x,hty=tg.y-(tg._s||30),hdx=htx-banana.x,hdy=hty-banana.y,hdl=Math.hypot(hdx,hdy)||1;banana.vx+=(hdx/hdl)*.22;banana.vy+=(hdy/hdl)*.22}}
   banana.x+=banana.vx;banana.y+=banana.vy;banana.rot+=.3;banana.age++;
   trail.push({x:banana.x,y:banana.y});if(trail.length>12)trail.shift();
   if(banana.x<-40||banana.x>W+40||banana.y>H+60){missShot();return}
   for(var pi=0;pi<powerUps.length;pi++){var pu=powerUps[pi];if(pu.collected)continue;if(Math.hypot(banana.x-pu.x,banana.y-pu.y)<35){pu.collected=true;if(banana.from===0){playerPU=pu.type;dPUCollected=true}else cpuPU=pu.type;spawnP(pu.x,pu.y,15,false);SFX.collect();updPU()}}
   for(var i=0;i<gorillas.length;i++){var go=gorillas[i],s=go._s||30;if(i===banana.from&&banana.age<8)continue;if(Math.hypot(banana.x-go.x,banana.y-(go.y-s))<s*.95){hitG(i);return}}
-  for(var bi=0;bi<buildings.length;bi++){var b=buildings[bi];if(banana.x>b.x&&banana.x<b.x+b.w&&banana.y>H-b.h){hitBld(banana.x,banana.y,b);return}}
+  for(var bi=0;bi<buildings.length;bi++){var b=buildings[bi];if(banana.x>b.x&&banana.x<b.x+b.w&&banana.y>H-b.h){
+    if(banana.wt==='piercing'&&banana.pierce>0){if(banana._lp!==bi){banana.pierce--;banana._lp=bi;startExp(banana.x,banana.y,false,false);spawnDeb(banana.x,banana.y,b.c2);b.h=Math.max(10,b.h-40)}continue}
+    hitBld(banana.x,banana.y,b);return}}
 }
 function hitBld(x,y,b){
   var mega=banana.mega,isCluster=banana.wt==='cluster';
