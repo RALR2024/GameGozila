@@ -816,8 +816,9 @@ function stepBan(){
     hitBld(banana.x,banana.y,b);return}}
 }
 function hitBld(x,y,b){
-  var mega=banana.mega,isCluster=banana.wt==='cluster';
-  if(isCluster){
+  var mega=banana.mega,isCluster=banana.wt==='cluster',isNapalm=banana.wt==='napalm';
+  if(isNapalm){for(var ni=-2;ni<=2;ni++){startExp(x+ni*34,y,false,false)}spawnP(x,y,50,true)}
+  else if(isCluster){
     var offsets=[{dx:0,dy:0},{dx:-30,dy:-20},{dx:30,dy:-10}];
     for(var i=0;i<offsets.length;i++){startExp(x+offsets[i].dx,y+offsets[i].dy,false,false)}
   }else{startExp(x,y,false,mega)}
@@ -825,8 +826,9 @@ function hitBld(x,y,b){
   spawnDeb(x,y,b.c2);if(!b.craters)b.craters=[];b.craters.push(x);b.h=Math.max(10,H-y-(mega?35:15));banana=null;
 }
 function hitG(idx){
-  var mega=banana.mega,isCluster=banana.wt==='cluster';
-  if(isCluster){startExp(banana.x,banana.y,true,false);startExp(banana.x-20,banana.y-15,false,false);startExp(banana.x+20,banana.y+10,false,false)}
+  var mega=banana.mega,isCluster=banana.wt==='cluster',isNapalm=banana.wt==='napalm';
+  if(isNapalm){startExp(banana.x,banana.y,true,false);for(var ni=-2;ni<=2;ni++){startExp(banana.x+ni*34,banana.y,false,false)}spawnP(banana.x,banana.y,60,true)}
+  else if(isCluster){startExp(banana.x,banana.y,true,false);startExp(banana.x-20,banana.y-15,false,false);startExp(banana.x+20,banana.y+10,false,false)}
   else startExp(banana.x,banana.y,true,mega);
   if(cpuLastShot&&banana.from===1){cpuLastShot.hitX=banana.x;cpuLastShot.hitY=banana.y}
   banana=null;gorillas[idx].ft=Date.now();
