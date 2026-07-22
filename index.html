@@ -834,7 +834,7 @@ function stepBan(){
   for(var pi=0;pi<powerUps.length;pi++){var pu=powerUps[pi];if(pu.collected)continue;if(Math.hypot(banana.x-pu.x,banana.y-pu.y)<35){pu.collected=true;if(banana.from===0){playerPU=pu.type;dPUCollected=true}else cpuPU=pu.type;spawnP(pu.x,pu.y,15,false);SFX.collect();updPU()}}
   for(var i=0;i<gorillas.length;i++){var go=gorillas[i],s=go._s||30;if(i===banana.from&&banana.age<8)continue;if(Math.hypot(banana.x-go.x,banana.y-(go.y-s))<s*.95){hitG(i);return}}
   for(var bi=0;bi<buildings.length;bi++){var b=buildings[bi];if(banana.x>b.x&&banana.x<b.x+b.w&&banana.y>H-b.h){
-    if(banana.wt==='piercing'&&banana.pierce>0){if(banana._lp!==bi){banana.pierce--;banana._lp=bi;startExp(banana.x,banana.y,false,false);spawnDeb(banana.x,banana.y,b.c2);b.h=Math.max(10,b.h-40)}continue}
+    if(banana.wt==='piercing'&&banana.pierce>0){if(banana._lp!==bi){banana.pierce--;banana._lp=bi;miniExp(banana.x,banana.y);spawnDeb(banana.x,banana.y,b.c2);b.h=Math.max(10,b.h-40)}continue}
     hitBld(banana.x,banana.y,b);return}}
 }
 function hitBld(x,y,b){
