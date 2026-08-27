@@ -1,0 +1,33 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.ralr2024.gorilas'
+    compileSdk 34
+    defaultConfig {
+        applicationId "com.ralr2024.gorilas"
+        minSdk 23
+        targetSdk 34
+        versionCode 2
+        versionName "2.0.0"
+    }
+    signingConfigs {
+        release {
+            storeFile file("C:\\Personal\\gozillas\\Gorilas - Google Play package\\signing.keystore")
+            storePassword "9loPws1fzZZX"
+            keyAlias "my-key-alias"
+            keyPassword "9loPws1fzZZX"
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.release
+        }
+    }
+}
+
+dependencies {
+    implementation 'androidx.browser:browser:1.8.0'
+}

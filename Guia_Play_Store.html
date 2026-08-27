@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Guia - Publicar Batalla de Gorilas en Google Play Store</title>
+<style>
+@page{size:letter;margin:2cm}
+body{font-family:'Segoe UI',system-ui,sans-serif;max-width:800px;margin:0 auto;padding:30px;line-height:1.7;color:#222;font-size:14px}
+h1{color:#3d1a6b;font-size:26px;border-bottom:3px solid #3d1a6b;padding-bottom:10px;margin-top:0}
+h2{color:#5a2d8a;font-size:20px;margin-top:30px;border-left:4px solid #ffd86b;padding-left:12px}
+h3{color:#333;font-size:16px;margin-top:20px}
+table{border-collapse:collapse;width:100%;margin:12px 0}
+th,td{border:1px solid #ddd;padding:8px 12px;text-align:left;font-size:13px}
+th{background:#3d1a6b;color:#fff}
+tr:nth-child(even){background:#f8f4ff}
+.step{background:#f0ebff;border-radius:8px;padding:16px;margin:14px 0;border-left:4px solid #7a2a8c}
+.step-num{font-family:'Segoe UI',sans-serif;font-weight:700;font-size:18px;color:#3d1a6b;margin-bottom:4px}
+.warning{background:#fff3cd;border:1px solid #ffc107;border-radius:8px;padding:12px;margin:12px 0;font-size:13px}
+.success{background:#d4edda;border:1px solid #28a745;border-radius:8px;padding:12px;margin:12px 0;font-size:13px}
+.code{background:#1a1033;color:#7fffd4;padding:10px 14px;border-radius:6px;font-family:'Consolas',monospace;font-size:12px;overflow-x:auto;margin:8px 0}
+ul{margin:8px 0;padding-left:24px}
+li{margin:4px 0}
+.header-info{color:#666;font-size:13px;margin-bottom:20px}
+.footer{margin-top:40px;padding-top:16px;border-top:1px solid #ddd;color:#888;font-size:11px;text-align:center}
+</style>
+</head>
+<body>
+
+<h1>&#x1F98D; Guia Completa: Publicar "Batalla de Gorilas" en Google Play Store</h1>
+<p class="header-info">Proyecto: GameGozila | Repositorio: github.com/RALR2024/GameGozila<br>Fecha: Mayo 2026 | Modelo: Gratis con anuncios (AdSense H5 Games Ads)</p>
+
+<h2>Resumen del Proceso</h2>
+<table>
+<tr><th>Paso</th><th>Que necesitas</th><th>Costo</th><th>Tiempo</th></tr>
+<tr><td>1. GitHub Pages</td><td>Repositorio ya creado</td><td>Gratis</td><td>5 min</td></tr>
+<tr><td>2. Cuenta AdSense</td><td>Sitio web activo (GitHub Pages)</td><td>Gratis</td><td>1-7 dias (aprobacion)</td></tr>
+<tr><td>3. Integrar anuncios</td><td>Codigo publisher de AdSense</td><td>Gratis</td><td>30 min</td></tr>
+<tr><td>4. Cuenta Google Play</td><td>Cuenta Google + tarjeta</td><td>$25 USD (unico)</td><td>1-2 dias</td></tr>
+<tr><td>5. Empaquetar con PWABuilder</td><td>URL de GitHub Pages</td><td>Gratis</td><td>15 min</td></tr>
+<tr><td>6. Closed Testing</td><td>20 testers reales</td><td>Gratis</td><td>14 dias</td></tr>
+<tr><td>7. Publicacion</td><td>Todo lo anterior completado</td><td>Gratis</td><td>1-3 dias (revision)</td></tr>
+</table>
+<p><strong>Costo total unico: $25 USD</strong> | <strong>Tiempo total estimado: 3-4 semanas</strong></p>
+
+<h2>PASO 1: Activar GitHub Pages</h2>
+<div class="step">
+<div class="step-num">1.1</div>
+<p>Ir a <strong>github.com/RALR2024/GameGozila</strong></p>
+</div>
+<div class="step">
+<div class="step-num">1.2</div>
+<p>Click en <strong>Settings</strong> (pestana superior)</p>
+</div>
+<div class="step">
+<div class="step-num">1.3</div>
+<p>En el menu lateral, click en <strong>Pages</strong></p>
+</div>
+<div class="step">
+<div class="step-num">1.4</div>
+<p>En "Source" seleccionar <strong>Deploy from a branch</strong></p>
+</div>
+<div class="step">
+<div class="step-num">1.5</div>
+<p>Seleccionar branch <strong>main</strong> y carpeta <strong>/ (root)</strong>, luego <strong>Save</strong></p>
+</div>
+<div class="success">
+<strong>Resultado:</strong> En 2-3 minutos tu juego estara disponible en:<br>
+<strong>https://ralr2024.github.io/GameGozila/</strong>
+</div>
+
+<h2>PASO 2: Crear Cuenta de Google AdSense</h2>
+<div class="step">
+<div class="step-num">2.1</div>
+<p>Ir a <strong>adsense.google.com</strong> e iniciar sesion con tu cuenta Google</p>
+</div>
+<div class="step">
+<div class="step-num">2.2</div>
+<p>Cuando pida tu sitio web, ingresar: <strong>ralr2024.github.io</strong></p>
+</div>
+<div class="step">
+<div class="step-num">2.3</div>
+<p>Completar la informacion de pago (nombre, direccion, cuenta bancaria)</p>
+</div>
+<div class="step">
+<div class="step-num">2.4</div>
+<p>Esperar aprobacion (1-7 dias). Google revisara que tu sitio tenga contenido real.</p>
+</div>
+<div class="success">
+<strong>Resultado:</strong> Obtendras un codigo de publisher con formato <strong>ca-pub-XXXXXXXXXXXXXXXX</strong>
+</div>
+<div class="warning">
+<strong>Nota:</strong> Si Google rechaza la solicitud la primera vez, espera unos dias y vuelve a intentar. Asegurate de que GitHub Pages este activo y funcionando antes de aplicar.
+</div>
+
+<h2>PASO 3: Integrar Anuncios en el Juego</h2>
+<h3>3.1 - Agregar el script de AdSense</h3>
+<p>En el archivo <strong>index.html</strong>, dentro de la etiqueta &lt;head&gt;, agregar:</p>
+<div class="code">
+&lt;script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-TUCODIGO" crossorigin="anonymous"&gt;&lt;/script&gt;
+</div>
+
+<h3>3.2 - Inicializar el Ad Placement API</h3>
+<p>Dentro de &lt;script&gt;, al inicio del JavaScript:</p>
+<div class="code">
+window.adsbygoogle = window.adsbygoogle || [];<br>
+function adBreak(o) { adsbygoogle.push(o); }<br>
+function adConfig(o) { adsbygoogle.push(o); }
+</div>
+
+<h3>3.3 - Mostrar anuncio entre rondas</h3>
+<p>En la funcion que se ejecuta al terminar una ronda (antes de iniciar la siguiente):</p>
+<div class="code">
+adBreak({<br>
+&nbsp;&nbsp;type: 'interstitial',<br>
+&nbsp;&nbsp;name: 'between-rounds',<br>
+&nbsp;&nbsp;beforeAd: function() { /* pausar sonido */ },<br>
+&nbsp;&nbsp;afterAd: function() { /* reanudar juego */ },<br>
+&nbsp;&nbsp;adBreakDone: function(info) { /* continuar siempre */ }<br>
+});
+</div>
+
+<h3>3.4 - Mostrar anuncio al terminar partida</h3>
+<p>En la funcion endGame(), antes de mostrar la pantalla de resultados:</p>
+<div class="code">
+adBreak({<br>
+&nbsp;&nbsp;type: 'interstitial',<br>
+&nbsp;&nbsp;name: 'game-over',<br>
+&nbsp;&nbsp;beforeAd: function() { /* pausar */ },<br>
+&nbsp;&nbsp;afterAd: function() { /* mostrar resultados */ }<br>
+});
+</div>
+
+<div class="warning">
+<strong>Importante:</strong> Google decide si muestra un anuncio o no en cada oportunidad. Tu solo defines DONDE puede aparecer, no se muestra siempre. No pongas mas de 1 anuncio por minuto de juego.
+</div>
+
+<h2>PASO 4: Crear Cuenta de Desarrollador en Google Play</h2>
+<div class="step">
+<div class="step-num">4.1</div>
+<p>Ir a <strong>play.google.com/console</strong></p>
+</div>
+<div class="step">
+<div class="step-num">4.2</div>
+<p>Aceptar los terminos y pagar la tarifa unica de <strong>$25 USD</strong></p>
+</div>
+<div class="step">
+<div class="step-num">4.3</div>
+<p>Completar la verificacion de identidad (puede pedir foto de ID)</p>
+</div>
+<div class="step">
+<div class="step-num">4.4</div>
+<p>Seleccionar tipo de cuenta: <strong>Individual</strong></p>
+</div>
+<div class="success">
+<strong>Resultado:</strong> Tendras acceso a Google Play Console para subir apps.
+</div>
+
+<h2>PASO 5: Empaquetar la App con PWABuilder</h2>
+<div class="step">
+<div class="step-num">5.1</div>
+<p>Ir a <strong>pwabuilder.com</strong></p>
+</div>
+<div class="step">
+<div class="step-num">5.2</div>
+<p>Ingresar la URL: <strong>https://ralr2024.github.io/GameGozila/</strong></p>
+</div>
+<div class="step">
+<div class="step-num">5.3</div>
+<p>PWABuilder auditara tu PWA. Verificar que pase todos los checks (manifest, SW, icons).</p>
+</div>
+<div class="step">
+<div class="step-num">5.4</div>
+<p>Click en <strong>"Package for stores"</strong> y seleccionar <strong>"Android"</strong></p>
+</div>
+<div class="step">
+<div class="step-num">5.5</div>
+<p>Configurar:</p>
+<ul>
+<li><strong>Package name:</strong> com.ralr2024.gorilas</li>
+<li><strong>App name:</strong> Batalla de Gorilas</li>
+<li><strong>Version:</strong> 1.0.0</li>
+<li><strong>Host:</strong> ralr2024.github.io</li>
+<li><strong>Start URL:</strong> /GameGozila/</li>
+</ul>
+</div>
+<div class="step">
+<div class="step-num">5.6</div>
+<p>Click en <strong>"Download"</strong>. Obtendras un ZIP con:</p>
+<ul>
+<li><strong>app.aab</strong> - El paquete Android para subir a Play Store</li>
+<li><strong>assetlinks.json</strong> - Archivo de verificacion de dominio</li>
+<li><strong>signing-key-info</strong> - Informacion de firma digital</li>
+</ul>
+</div>
+<div class="step">
+<div class="step-num">5.7</div>
+<p><strong>IMPORTANTE:</strong> Subir el archivo <strong>assetlinks.json</strong> generado al repositorio, reemplazando el placeholder en la carpeta <strong>.well-known/</strong>. Luego hacer push a GitHub.</p>
+</div>
+
+<h2>PASO 6: Subir a Google Play Console</h2>
+<div class="step">
+<div class="step-num">6.1</div>
+<p>En Play Console, click en <strong>"Crear app"</strong></p>
+</div>
+<div class="step">
+<div class="step-num">6.2</div>
+<p>Llenar informacion basica:</p>
+<ul>
+<li><strong>Nombre:</strong> Batalla de Gorilas</li>
+<li><strong>Idioma:</strong> Espanol</li>
+<li><strong>Tipo:</strong> Juego</li>
+<li><strong>Gratis</strong></li>
+</ul>
+</div>
+<div class="step">
+<div class="step-num">6.3</div>
+<p>En <strong>"Ficha de Play Store"</strong> completar:</p>
+<ul>
+<li><strong>Descripcion corta:</strong> Lanza platanos explosivos al gorila enemigo en este clasico juego de artilleria!</li>
+<li><strong>Descripcion completa:</strong> Batalla de Gorilas es un juego de artilleria por turnos inspirado en el clasico Gorillas de QBasic. Elige entre 3 arenas (Neon, Selva, Espacio), 3 armas (platano, cluster bomb, boomerang) y desafia a la CPU o a un amigo en el mismo dispositivo. Incluye power-ups, clima dinamico, logros y modo infinito.</li>
+<li><strong>Capturas de pantalla:</strong> Minimo 2 screenshots del juego (tomar desde el celular)</li>
+<li><strong>Icono:</strong> Subir icon-512.png</li>
+</ul>
+</div>
+<div class="step">
+<div class="step-num">6.4</div>
+<p>En <strong>"Clasificacion de contenido"</strong>: Completar el cuestionario. Seleccionar que NO hay violencia realista, NO hay contenido sexual, NO hay compras. Resultado esperado: <strong>PEGI 3 / Everyone</strong></p>
+</div>
+<div class="step">
+<div class="step-num">6.5</div>
+<p>En <strong>"Politica de privacidad"</strong> ingresar:<br>
+<strong>https://ralr2024.github.io/GameGozila/privacidad.html</strong></p>
+</div>
+<div class="step">
+<div class="step-num">6.6</div>
+<p>En <strong>"Configuracion de la app" &gt; "Anuncios"</strong>: Marcar que tu app <strong>SI contiene anuncios</strong></p>
+</div>
+
+<h2>PASO 7: Closed Testing (14 dias)</h2>
+<div class="step">
+<div class="step-num">7.1</div>
+<p>En Play Console, ir a <strong>"Pruebas" &gt; "Pruebas cerradas"</strong></p>
+</div>
+<div class="step">
+<div class="step-num">7.2</div>
+<p>Crear un nuevo track de prueba cerrada</p>
+</div>
+<div class="step">
+<div class="step-num">7.3</div>
+<p>Subir el archivo <strong>app.aab</strong> generado por PWABuilder</p>
+</div>
+<div class="step">
+<div class="step-num">7.4</div>
+<p>Crear una <strong>lista de testers</strong> con los emails de 20 personas (amigos, familia, companeros)</p>
+</div>
+<div class="step">
+<div class="step-num">7.5</div>
+<p>Publicar la prueba cerrada. Google te dara un <strong>link de invitacion</strong>.</p>
+</div>
+<div class="step">
+<div class="step-num">7.6</div>
+<p>Enviar el link a tus 20 testers por WhatsApp/email. Ellos deben:</p>
+<ul>
+<li>Abrir el link</li>
+<li>Aceptar ser testers</li>
+<li>Instalar la app desde Play Store</li>
+<li>(No necesitan hacer nada mas)</li>
+</ul>
+</div>
+<div class="step">
+<div class="step-num">7.7</div>
+<p><strong>Esperar 14 dias</strong> con la app activa en closed testing</p>
+</div>
+
+<h2>PASO 8: Publicar en Produccion</h2>
+<div class="step">
+<div class="step-num">8.1</div>
+<p>Despues de los 14 dias, ir a <strong>"Produccion"</strong> en Play Console</p>
+</div>
+<div class="step">
+<div class="step-num">8.2</div>
+<p>Crear un nuevo release y subir el mismo <strong>app.aab</strong></p>
+</div>
+<div class="step">
+<div class="step-num">8.3</div>
+<p>Enviar a revision. Google revisa en <strong>1-3 dias</strong>.</p>
+</div>
+<div class="success">
+<strong>Resultado final:</strong> Tu juego estara disponible publicamente en Google Play Store, gratis, generando ingresos por anuncios automaticamente.
+</div>
+
+<h2>Como Funciona el Dinero</h2>
+<table>
+<tr><th>Concepto</th><th>Detalle</th></tr>
+<tr><td>Fuente de ingresos</td><td>Anuncios intersticiales entre rondas y al fin de partida</td></tr>
+<tr><td>Quien paga</td><td>Google (cobra a los anunciantes y te da tu parte)</td></tr>
+<tr><td>Ingreso estimado</td><td>$1-5 USD por cada 1,000 partidas jugadas</td></tr>
+<tr><td>Umbral de pago</td><td>$100 USD acumulados</td></tr>
+<tr><td>Forma de pago</td><td>Transferencia bancaria automatica</td></tr>
+<tr><td>Cuando paga</td><td>Entre el 21-26 del mes siguiente a alcanzar $100</td></tr>
+<tr><td>Panel de control</td><td>adsense.google.com (ves ganancias diarias)</td></tr>
+</table>
+
+<h2>Archivos del Proyecto</h2>
+<table>
+<tr><th>Archivo</th><th>Funcion</th></tr>
+<tr><td>index.html</td><td>Juego principal (URL limpia)</td></tr>
+<tr><td>manifest.json</td><td>Metadatos PWA (nombre, iconos, display)</td></tr>
+<tr><td>sw.js</td><td>Service Worker (offline + cache)</td></tr>
+<tr><td>icon-192.png / icon-512.png</td><td>Iconos estandar</td></tr>
+<tr><td>icon-maskable-192.png / icon-maskable-512.png</td><td>Iconos adaptables Android</td></tr>
+<tr><td>privacidad.html</td><td>Politica de privacidad (requerida por Play Store)</td></tr>
+<tr><td>.well-known/assetlinks.json</td><td>Verificacion TWA (actualizar con PWABuilder)</td></tr>
+</table>
+
+<h2>URLs Importantes</h2>
+<table>
+<tr><th>Recurso</th><th>URL</th></tr>
+<tr><td>Repositorio</td><td>github.com/RALR2024/GameGozila</td></tr>
+<tr><td>Juego en vivo</td><td>ralr2024.github.io/GameGozila/</td></tr>
+<tr><td>Politica de privacidad</td><td>ralr2024.github.io/GameGozila/privacidad.html</td></tr>
+<tr><td>Google AdSense</td><td>adsense.google.com</td></tr>
+<tr><td>Google Play Console</td><td>play.google.com/console</td></tr>
+<tr><td>PWABuilder</td><td>pwabuilder.com</td></tr>
+</table>
+
+<h2>Checklist Final</h2>
+<table>
+<tr><th>#</th><th>Tarea</th><th>Estado</th></tr>
+<tr><td>1</td><td>Juego funcional y completo</td><td>&#x2705; Hecho</td></tr>
+<tr><td>2</td><td>PWA con manifest + SW + iconos</td><td>&#x2705; Hecho</td></tr>
+<tr><td>3</td><td>Iconos maskable para Android</td><td>&#x2705; Hecho</td></tr>
+<tr><td>4</td><td>Politica de privacidad</td><td>&#x2705; Hecho</td></tr>
+<tr><td>5</td><td>Subido a GitHub</td><td>&#x2705; Hecho</td></tr>
+<tr><td>6</td><td>GitHub Pages activado</td><td>&#x23F3; Pendiente confirmar</td></tr>
+<tr><td>7</td><td>Cuenta AdSense creada</td><td>&#x23F3; Pendiente</td></tr>
+<tr><td>8</td><td>Anuncios integrados</td><td>&#x23F3; Pendiente (necesita codigo publisher)</td></tr>
+<tr><td>9</td><td>Cuenta Google Play ($25)</td><td>&#x23F3; Pendiente</td></tr>
+<tr><td>10</td><td>Empaquetar con PWABuilder</td><td>&#x23F3; Pendiente</td></tr>
+<tr><td>11</td><td>assetlinks.json actualizado</td><td>&#x23F3; Pendiente (despues de PWABuilder)</td></tr>
+<tr><td>12</td><td>Closed testing 14 dias</td><td>&#x23F3; Pendiente</td></tr>
+<tr><td>13</td><td>Publicacion en produccion</td><td>&#x23F3; Pendiente</td></tr>
+</table>
+
+<div class="footer">
+Documento generado el 28 de mayo de 2026 | Batalla de Gorilas v1.0 | Desarrollador: RALR2024
+</div>
+</body>
+</html>

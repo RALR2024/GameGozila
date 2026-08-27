@@ -1,0 +1,42 @@
+# ---------------------------------------------------------------------------
+# Batalla de Gorilas — .gitignore
+# ---------------------------------------------------------------------------
+
+# --- Binarios de app y artefactos de empaquetado (NO versionar) ---
+*.aab
+*.apk
+temp_aab.zip
+aab_extract/
+
+# --- Claves de firma (NUNCA subir: comprometen la app en Play Store) ---
+*.keystore
+*.jks
+keystore.properties
+
+# --- Proyecto Android TWA: basura de build y config local ---
+twa_project/.gradle/
+twa_project/.idea/
+twa_project/local.properties
+**/build/
+*.iml
+
+# --- Capturas de pantalla y QR temporales (raíz) ---
+Captura de pantalla *.png
+c1-task*.png
+f2-task*.png
+f3-task*.png
+qr_*.png
+
+# --- Scripts sueltos de prueba/utilidad ---
+test-mirv.html
+test-mirv.js
+verify-mirv.js
+fix_aab.py
+
+# --- Carpetas de herramientas/entorno ---
+.playwright-mcp/
+.superpowers/
+
+# --- Basura del sistema operativo ---
+Thumbs.db
+.DS_Store
